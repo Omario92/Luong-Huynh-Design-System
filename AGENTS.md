@@ -11,6 +11,7 @@
 * `npm run dev` / `live-server` hoặc tương đương để chạy preview.
 
 ## Recent Changes
+- **2026-06-10**: Nâng cấp phần Hero / Intro của trang `about.html` thành phong cách monograph nghệ thuật cao cấp: thiết kế lưới 2 cột bất đối xứng, cách điệu tên nghệ sĩ xếp chồng khổng lồ, tinh chỉnh màu nhấn acid lime siêu tối giản, bổ sung lớp phủ dot grid và quầng sáng mờ cinematic.
 - **2026-06-10**: Nâng cấp bố cục Project Metadata & Typography trên 13 card dự án tại file `portfolio.html`: chèn lưới thông tin chi tiết (Role, Client, Year) dùng font JetBrains Mono (9px/11px) ngăn cách bởi các hairline mờ phát sáng nhẹ khi hover.
 - **2026-06-10**: Tinh chỉnh kích thước của Custom Cursor: Tăng độ lớn của vòng tròn dot xanh ở tâm lên 10px (+66%) để tăng khả năng nhận diện, đồng thời giảm 20% kích thước vòng ring ngoài (xuống 30px) để ôm sát thon gọn hơn.
 - **2026-06-10**: Triển khai tính năng Custom Interactive Cinematic Cursor (chuột tùy chỉnh mượt với Lerp physics) trên các file `styles.css` và `main.js`, dọn dẹp các mã nguồn dư thừa và kiểm tra cú pháp JS thành công.
