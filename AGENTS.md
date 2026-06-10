@@ -11,6 +11,7 @@
 * `npm run dev` / `live-server` hoặc tương đương để chạy preview.
 
 ## Recent Changes
+- **2026-06-10**: Thay thế ảnh cover và thumbnail của dự án "BT Studio – CGI Huda Football" bằng video vòng lặp chiến dịch `assets/video/2023/CGI Huda Football.mp4` trên trang chủ, trang portfolio và trang chi tiết dự án.
 - **2026-06-10**: Chuyển đổi bộ lọc dự án tại `portfolio.html` từ chọn nhiều (multi-select) sang chọn đơn (single-select) kèm tính năng tự động tắt/bật (toggle) khi click lại cùng một category.
 - **2026-06-10**: Nâng cấp phần Capabilities / Services của trang `about.html` từ thiết kế cũ sang phong cách mới "Digital Artist / 3D / AI / VFX", sử dụng layout lưới hairline grid bất đối xứng `lh-capabilities-grid` với hover và hiệu ứng gạch chân neon acid lime.
 - **2026-06-10**: Nâng cấp phần Hero / Intro của trang `about.html` thành phong cách monograph nghệ thuật cao cấp: thiết kế lưới 2 cột bất đối xứng, cách điệu tên nghệ sĩ xếp chồng khổng lồ, tinh chỉnh màu nhấn acid lime siêu tối giản, bổ sung lớp phủ dot grid và quầng sáng mờ cinematic.
