@@ -1,0 +1,220 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "site/assets/js/**",
+              "ui_kits/portfolio/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Newake|Inter Tight|Inter|JetBrains Mono))/i]",
+        "message": "Font not provided by the design system. Available: Newake, Inter Tight, Inter, JetBrains Mono."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {},
+    "tokens": [
+      "--bg-1",
+      "--bg-2",
+      "--bg-card",
+      "--bg-card-2",
+      "--fg-1",
+      "--fg-2",
+      "--fg-accent",
+      "--fg-on-accent",
+      "--font-body",
+      "--font-display",
+      "--font-display-alt",
+      "--font-mono",
+      "--lh-accent",
+      "--lh-accent-warm",
+      "--lh-bg",
+      "--lh-bg-soft",
+      "--lh-dur-base",
+      "--lh-dur-fast",
+      "--lh-dur-slow",
+      "--lh-ease",
+      "--lh-gutter",
+      "--lh-line",
+      "--lh-line-strong",
+      "--lh-max",
+      "--lh-muted",
+      "--lh-panel",
+      "--lh-panel-2",
+      "--lh-pill",
+      "--lh-radius-lg",
+      "--lh-radius-md",
+      "--lh-radius-sm",
+      "--lh-section-y",
+      "--lh-space-1",
+      "--lh-space-2",
+      "--lh-space-3",
+      "--lh-space-4",
+      "--lh-space-5",
+      "--lh-space-6",
+      "--lh-space-7",
+      "--lh-space-8",
+      "--lh-space-9",
+      "--lh-text",
+      "--type-body-lh",
+      "--type-body-size",
+      "--type-body-track",
+      "--type-body-weight",
+      "--type-eyebrow-size",
+      "--type-eyebrow-track",
+      "--type-eyebrow-weight",
+      "--type-h1-lh",
+      "--type-h1-size",
+      "--type-h1-track",
+      "--type-h1-weight",
+      "--type-h2-lh",
+      "--type-h2-size",
+      "--type-h2-track",
+      "--type-h2-weight",
+      "--type-h3-lh",
+      "--type-h3-size",
+      "--type-h3-track",
+      "--type-h3-weight",
+      "--type-hero-lh",
+      "--type-hero-size",
+      "--type-hero-track",
+      "--type-hero-weight",
+      "--type-lead-lh",
+      "--type-lead-size",
+      "--type-lead-track",
+      "--type-lead-weight",
+      "--type-meta-size",
+      "--type-meta-track",
+      "--type-meta-weight",
+      "--type-small-lh",
+      "--type-small-size",
+      "--type-tag-size",
+      "--type-tag-track",
+      "--type-tag-weight"
+    ],
+    "tokenKinds": {
+      "--lh-bg": "color",
+      "--lh-bg-soft": "color",
+      "--lh-panel": "color",
+      "--lh-panel-2": "color",
+      "--lh-text": "font",
+      "--lh-muted": "color",
+      "--lh-line": "color",
+      "--lh-line-strong": "color",
+      "--lh-accent": "color",
+      "--lh-accent-warm": "color",
+      "--fg-1": "color",
+      "--fg-2": "color",
+      "--fg-accent": "color",
+      "--fg-on-accent": "color",
+      "--bg-1": "color",
+      "--bg-2": "color",
+      "--bg-card": "color",
+      "--bg-card-2": "color",
+      "--lh-radius-sm": "radius",
+      "--lh-radius-md": "radius",
+      "--lh-radius-lg": "radius",
+      "--lh-pill": "spacing",
+      "--lh-space-1": "spacing",
+      "--lh-space-2": "spacing",
+      "--lh-space-3": "spacing",
+      "--lh-space-4": "spacing",
+      "--lh-space-5": "spacing",
+      "--lh-space-6": "spacing",
+      "--lh-space-7": "spacing",
+      "--lh-space-8": "spacing",
+      "--lh-space-9": "spacing",
+      "--lh-max": "spacing",
+      "--lh-gutter": "spacing",
+      "--lh-section-y": "spacing",
+      "--lh-ease": "other",
+      "--lh-dur-fast": "other",
+      "--lh-dur-base": "other",
+      "--lh-dur-slow": "other",
+      "--font-display": "font",
+      "--font-display-alt": "font",
+      "--font-body": "font",
+      "--font-mono": "font",
+      "--type-hero-size": "font",
+      "--type-hero-lh": "font",
+      "--type-hero-track": "font",
+      "--type-hero-weight": "font",
+      "--type-h1-size": "font",
+      "--type-h1-lh": "font",
+      "--type-h1-track": "font",
+      "--type-h1-weight": "font",
+      "--type-h2-size": "font",
+      "--type-h2-lh": "font",
+      "--type-h2-track": "font",
+      "--type-h2-weight": "font",
+      "--type-h3-size": "font",
+      "--type-h3-lh": "font",
+      "--type-h3-track": "font",
+      "--type-h3-weight": "font",
+      "--type-lead-size": "font",
+      "--type-lead-lh": "font",
+      "--type-lead-track": "font",
+      "--type-lead-weight": "font",
+      "--type-body-size": "font",
+      "--type-body-lh": "font",
+      "--type-body-track": "font",
+      "--type-body-weight": "font",
+      "--type-small-size": "font",
+      "--type-small-lh": "font",
+      "--type-eyebrow-size": "font",
+      "--type-eyebrow-track": "font",
+      "--type-eyebrow-weight": "font",
+      "--type-meta-size": "font",
+      "--type-meta-track": "font",
+      "--type-meta-weight": "font",
+      "--type-tag-size": "font",
+      "--type-tag-track": "font",
+      "--type-tag-weight": "font"
+    },
+    "fontFamilies": [
+      "Inter",
+      "Inter Tight",
+      "JetBrains Mono",
+      "Newake"
+    ]
+  }
+}

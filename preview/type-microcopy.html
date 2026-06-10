@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- @dsCard group="Type" name="Eyebrow, meta, tags" subtitle="Uppercase microcopy specimens" viewport="700x260" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Eyebrow & meta</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 28px 32px; display: grid; gap: 18px; }
+  .group { display: grid; gap: 10px; }
+  .eyebrow { color: var(--fg-accent); font-size: 13px; letter-spacing: 0.16em; font-weight: 700; text-transform: uppercase; line-height: 1; }
+  .meta { color: var(--fg-2); font-size: 12px; letter-spacing: 0.14em; font-weight: 600; text-transform: uppercase; line-height: 1.1; }
+  .meta-row { display: flex; gap: 16px; align-items: center; }
+  .meta-row > * + *::before { content: "·"; margin-right: 16px; color: rgba(244,240,232,0.28); }
+  .tag { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border: 1px solid var(--lh-line); border-radius: 999px; font-size: 10px; letter-spacing: 0.12em; font-weight: 700; text-transform: uppercase; color: rgba(244,240,232,0.72); }
+  .label { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+</style>
+</head><body>
+<div class="card">
+  <div class="group">
+    <div class="label">.eyebrow · Inter 700 · 0.16em · acid-lime</div>
+    <div class="eyebrow">Selected Works · 2024–2026</div>
+  </div>
+  <div class="group">
+    <div class="label">.meta · Inter 600 · 0.14em · muted ivory</div>
+    <div class="meta meta-row"><span>Ho Chi Minh City</span><span>2026</span><span>Available for Work</span></div>
+  </div>
+  <div class="group">
+    <div class="label">.tag · 10px · 0.12em · pill, 1px hairline</div>
+    <div class="row">
+      <span class="tag">AI Generated</span>
+      <span class="tag">Branding</span>
+      <span class="tag">CGI</span>
+      <span class="tag">Key Visuals</span>
+      <span class="tag">TVC / Film</span>
+    </div>
+  </div>
+</div>
+</body></html>

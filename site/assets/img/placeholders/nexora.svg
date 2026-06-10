@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-label="Nexora">
+  <defs>
+    <radialGradient id="g11" cx="70%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#e1f062" stop-opacity="0.75"></stop>
+      <stop offset="42%" stop-color="#243047" stop-opacity="0.5"></stop>
+      <stop offset="100%" stop-color="#08090c"></stop>
+    </radialGradient>
+    <linearGradient id="shine11" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"></stop>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.02"></stop>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.12"></stop>
+    </linearGradient>
+    <filter id="blur11"><feGaussianBlur stdDeviation="28"></feGaussianBlur></filter>
+  </defs>
+  <rect width="1200" height="820" fill="url(#g11)"></rect>
+  <circle cx="427" cy="433" r="189" fill="#e1f062" opacity="0.22" filter="url(#blur11)"></circle>
+  <circle cx="677" cy="399" r="185" fill="#ffffff" opacity="0.06" filter="url(#blur11)"></circle>
+  <path d="M72 640 C 300 500, 410 760, 675 540 S 1000 360, 1130 500" fill="none" stroke="url(#shine11)" stroke-width="2"></path>
+  <rect x="72" y="72" width="1056" height="676" rx="38" fill="#ffffff" opacity="0.055" stroke="#ffffff" stroke-opacity="0.16"></rect>
+  <text x="92" y="132" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#d7dbe7" opacity="0.72">LUONG HUYNH / PORTFOLIO PLACEHOLDER</text>
+  <text x="92" y="680" font-family="Arial, Helvetica, sans-serif" font-size="58" fill="#ffffff" font-weight="700">Nexora</text>
+</svg>

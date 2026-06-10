@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- @dsCard group="Spacing" name="Radii" subtitle="sm · md · lg · pill" viewport="700x220" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Radii</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 28px 32px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: end; }
+  .swatch { aspect-ratio: 1; background: var(--lh-panel); border: 1px solid var(--lh-line); display: flex; align-items: flex-end; padding: 10px; }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+  .name { display: block; font-family: var(--font-body); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--fg-1); text-transform: uppercase; margin-bottom: 4px; }
+</style>
+</head><body>
+<div class="card">
+  <div class="swatch" style="border-radius:12px"><div><span class="name">sm</span><span class="meta">12px · inputs</span></div></div>
+  <div class="swatch" style="border-radius:20px"><div><span class="name">md</span><span class="meta">20px · media inner</span></div></div>
+  <div class="swatch" style="border-radius:32px"><div><span class="name">lg</span><span class="meta">32px · cards</span></div></div>
+  <div class="swatch" style="border-radius:999px"><div><span class="name">pill</span><span class="meta">999px · buttons, tags</span></div></div>
+</div>
+</body></html>

@@ -1,0 +1,17 @@
+# AI Coding Agent System
+
+## Rules
+1. Bắt buộc đọc file `AGENTS.md` trước khi thực hiện bất kỳ hành động nào.
+2. Tuân thủ nghiêm ngặt định hướng thiết kế thương hiệu trong `_source/DESIGN.md` và `README.md`.
+3. Chỉ sử dụng Vanilla CSS và Javascript thuần để tùy biến giao diện nhằm đảm bảo khả năng tích hợp mượt mà vào Elementor (sử dụng tiền tố `lh-`).
+4. Giữ thiết kế tối giản, đậm chất điện ảnh (cinematic "black room"), hạn chế tối đa các chi tiết thừa thãi.
+5. Không sử dụng các emoji, không dùng các biểu tượng unicode trang trí trừ dấu chấm trung tâm (`·`).
+
+## Commands
+* `npm run dev` / `live-server` hoặc tương đương để chạy preview.
+
+## Recent Changes
+- **2026-06-10**: Nâng cấp bố cục Project Metadata & Typography trên 13 card dự án tại file `portfolio.html`: chèn lưới thông tin chi tiết (Role, Client, Year) dùng font JetBrains Mono (9px/11px) ngăn cách bởi các hairline mờ phát sáng nhẹ khi hover.
+- **2026-06-10**: Tinh chỉnh kích thước của Custom Cursor: Tăng độ lớn của vòng tròn dot xanh ở tâm lên 10px (+66%) để tăng khả năng nhận diện, đồng thời giảm 20% kích thước vòng ring ngoài (xuống 30px) để ôm sát thon gọn hơn.
+- **2026-06-10**: Triển khai tính năng Custom Interactive Cinematic Cursor (chuột tùy chỉnh mượt với Lerp physics) trên các file `styles.css` và `main.js`, dọn dẹp các mã nguồn dư thừa và kiểm tra cú pháp JS thành công.
+- **2026-06-10**: Khởi tạo file hệ thống `AGENTS.md` và tiến hành phân tích mã nguồn `portfolio.html` cùng các assets để lập đề xuất nâng cấp Premium Editorial VFX Portfolio.

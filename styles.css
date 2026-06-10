@@ -1,0 +1,16 @@
+/* =========================================================
+   Luong Huynh — Design System · root stylesheet
+   Cinematic Digital Artist Portfolio
+
+   This is the canonical entry point for consumers. Link this
+   single file and you get all design tokens, the Newake
+   @font-face, the Google Fonts import, and the semantic element
+   styles (headings, eyebrow, meta, tags, body).
+
+   Production note: the Elementor-ready build of these same rules
+   (with the `lh-` component classes) lives at
+   site/assets/css/styles.css — it is a separate, self-contained
+   stylesheet and intentionally not imported here.
+   ========================================================= */
+
+@import url("colors_and_type.css");

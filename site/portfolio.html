@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio — Luong Huynh</title>
+  <meta name="description" content="Portfolio of Luong Huynh — Digital Artist specializing in 3D visuals, AI-generated imagery and VFX.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <!-- =====================================================
+       PORTFOLIO GRID & CARD — CINEMATIC UPGRADE
+       Page-scoped. Loaded after styles.css so these rules win.
+       Only touches .lh-work-grid / .lh-work-card internals.
+       Filter bar, header and footer are untouched.
+       ===================================================== -->
+  <style>
+    /* ── ASYMMETRIC EDITORIAL GRID ───────────────────────────────────────────
+       6-col grid with `dense` auto-flow. Cards opt into a larger footprint
+       via data-size on the <article>:
+         feature  — span 4 cols × 2 rows  (career-defining hero)
+         wide     — span 4 cols × 1 row   (cinematic letterbox)
+         tall     — span 2 cols × 2 rows  (portrait, magazine feel)
+         (default — span 2 cols × 1 row,  the standard tile)
+       Layout overrides styles.css for the .lh-work-grid only; below 1024px
+       the grid collapses back to the existing 2-col / 1-col behaviour. ── */
+    .lh-work-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-auto-flow: dense;
+      /* Floor sits close to a standard card height so the row a feature/tall
+         only "passes through" (no single-row resident) doesn't collapse to
+         the old 220 floor — features end up at ≈2× a standard, not 1.45×. */
+      grid-auto-rows: minmax(clamp(420px, 28vw, 520px), auto);
+      perspective: 1600px;
+    }
+
+    .lh-work-card { grid-column: span 2; }                            /* default tile */
+    .lh-work-card[data-size="feature"] { grid-column: span 4; grid-row: span 2; }
+    .lh-work-card[data-size="wide"]    { grid-column: span 4; }
+    .lh-work-card[data-size="tall"]    { grid-column: span 2; grid-row: span 2; }
+
+    /* For all multi-row OR wide cards, drop the fixed aspect ratio and let
+       the media flex-grow to fill the slot the grid track gives the card —
+       the card height is driven by the grid, not by the media's intrinsic
+       ratio. Wide's cinemascope feel comes from its 4-col×1-row footprint,
+       not from a hard-coded 21:9 (which used to leave dead body whitespace).
+       Scoped to ≥1025px so the tablet collapse doesn't inherit a 0-height
+       flex item. */
+    @media (min-width: 1025px) {
+      .lh-work-card[data-size="feature"] .lh-work-media,
+      .lh-work-card[data-size="tall"]    .lh-work-media,
+      .lh-work-card[data-size="wide"]    .lh-work-media {
+        aspect-ratio: auto;
+        flex: 1 1 0;
+        min-height: 0;
+      }
+      /* styles.css gives .lh-work-body { flex: 1 } — on big cards that fights
+         the flex-grow media (both grow, splitting the slot). Pin the body to
+         its content height so the media takes 100% of the leftover space. */
+      .lh-work-card[data-size="feature"] .lh-work-body,
+      .lh-work-card[data-size="tall"]    .lh-work-body,
+      .lh-work-card[data-size="wide"]    .lh-work-body {
+        flex: 0 0 auto;
+      }
+    }
+
+    /* Stronger display-side type cue on the hero pieces — still tokenised. */
+    .lh-work-card[data-size="feature"] .lh-work-title,
+    .lh-work-card[data-size="wide"]    .lh-work-title {
+      font-size: clamp(28px, 2.6vw, 40px);
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Tablet (≤1024px): collapse to the existing 2-col rhythm. Featured
+       and wide pieces still get full-width prominence; tall demotes to
+       standard so we don't end up with awkward orphan rows. ── */
+    @media (max-width: 1024px) {
+      .lh-work-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: auto;
+      }
+      .lh-work-card,
+      .lh-work-card[data-size="tall"] { grid-column: span 1; grid-row: auto; }
+      .lh-work-card[data-size="feature"],
+      .lh-work-card[data-size="wide"] { grid-column: span 2; grid-row: auto; }
+      .lh-work-card[data-size="feature"] .lh-work-media { aspect-ratio: 16 / 10; }
+      .lh-work-card[data-size="wide"]    .lh-work-media { aspect-ratio: 16 / 9;  }
+    }
+
+    @media (max-width: 768px) {
+      .lh-work-grid { grid-template-columns: 1fr; }
+      .lh-work-card,
+      .lh-work-card[data-size] { grid-column: span 1; grid-row: auto; }
+      .lh-work-card[data-size] .lh-work-media { aspect-ratio: 16 / 11; }
+    }
+
+    /* ── Card: depth via shadow + accent border interaction (no transform —
+         the parallax script owns the card's transform) ─────────────────── */
+    .lh-work-card {
+      box-shadow: 0 1px 0 rgba(7, 7, 7, 0) , 0 0 0 0 rgba(0, 0, 0, 0);
+      transition:
+        border-color var(--lh-dur-base) var(--lh-ease),
+        background    var(--lh-dur-base) var(--lh-ease),
+        box-shadow    var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover {
+      border-color: color-mix(in srgb, var(--lh-accent) 30%, var(--lh-line-strong));
+      box-shadow:
+        0 32px 64px -34px rgba(0, 0, 0, 0.75),                          /* cinematic cast shadow */
+        0 0 0 1px color-mix(in srgb, var(--lh-accent) 18%, transparent), /* hairline accent ring */
+        0 0 46px -8px color-mix(in srgb, var(--lh-accent) 22%, transparent); /* soft outer glow */
+    }
+
+    /* ── Filtering / load entrance: staggered reveal driven by the page script.
+         Animations live on the inner <a> so they never fight the parallax transform
+         the JS sets on the card itself. Cards stay visible if JS fails (no FOUC). ── */
+    @keyframes lh-card-enter {
+      from { opacity: 0; transform: scale(0.96) translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes lh-card-leave {
+      from { opacity: 1; transform: none; }
+      to   { opacity: 0; transform: scale(0.965) translateY(8px); }
+    }
+
+    .lh-work-card > a.lh-stagger-in {
+      animation: lh-card-enter 0.55s var(--lh-ease) both;
+      animation-delay: var(--lh-enter-delay, 0s);
+    }
+    .lh-work-card > a.lh-stagger-out {
+      animation: lh-card-leave 0.26s var(--lh-ease) both;
+      pointer-events: none;
+    }
+
+    /* ── Filter status line — mono "now showing" readout under the bar ──────── */
+    .lh-filter-status {
+      margin: 0 0 clamp(24px, 3.5vw, 44px);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--lh-soft);
+      min-height: 1.4em;
+    }
+    .lh-filter-status b { color: var(--lh-text); font-weight: 500; }
+    .lh-filter-status .lh-fs-accent { color: var(--lh-accent); }
+
+    /* ── Cinematic "No results" — empty film reel ───────────────────────────── */
+    .lh-no-results[hidden] { display: none; }
+    .lh-no-results {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: clamp(12px, 1.6vw, 18px);
+      padding: clamp(64px, 11vw, 132px) clamp(24px, 6vw, 72px);
+      border: 1px solid var(--lh-line);
+      border-radius: var(--lh-radius-lg);
+      background:
+        radial-gradient(circle at 50% 8%, color-mix(in srgb, var(--lh-accent) 9%, transparent), transparent 58%),
+        var(--lh-panel);
+      animation: lh-card-enter 0.5s var(--lh-ease) both;
+    }
+    /* film-strip perforations top & bottom */
+    .lh-no-results::before,
+    .lh-no-results::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 16px;
+      background-image: repeating-linear-gradient(to right,
+        rgba(244, 240, 232, 0.5) 0 11px, transparent 11px 28px);
+      opacity: 0.07;
+      pointer-events: none;
+    }
+    .lh-no-results::before { top: 16px; }
+    .lh-no-results::after  { bottom: 16px; }
+
+    .lh-no-results-kicker {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: var(--type-eyebrow-size);
+      font-weight: var(--type-eyebrow-weight);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--lh-accent);
+      line-height: 1;
+    }
+    .lh-no-results-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 5.4vw, 76px);
+      line-height: 0.94;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lh-text);
+    }
+    .lh-no-results-copy {
+      margin: 0;
+      max-width: 48ch;
+      color: var(--lh-muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .lh-no-results .lh-button { margin-top: clamp(6px, 1vw, 12px); }
+
+    /* ── Media: stronger cinematic reveal + edge-light + film grain ─────── */
+    .lh-work-media img,
+    .lh-work-media video {
+      transform: scale(1.001);
+      transition:
+        transform var(--lh-dur-slow) var(--lh-ease),
+        filter    var(--lh-dur-slow) var(--lh-ease);
+      will-change: transform, filter;
+    }
+
+    .lh-work-card:hover .lh-work-media img,
+    .lh-work-card:hover .lh-work-media video {
+      transform: scale(1.075);
+      filter: contrast(1.10) saturate(1.14) brightness(1.02);
+    }
+
+    /* ::before = cinematic scrim + accent edge-light (inner glow on hover) */
+    .lh-work-media::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      border-radius: inherit;
+      background: linear-gradient(to top, rgba(7, 7, 7, 0.52), transparent 44%);
+      box-shadow: inset 0 0 0 1px rgba(244, 240, 232, 0);
+      opacity: 0.9;
+      transition:
+        box-shadow var(--lh-dur-base) var(--lh-ease),
+        background var(--lh-dur-base) var(--lh-ease),
+        opacity    var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover .lh-work-media::before {
+      opacity: 1;
+      background: linear-gradient(to top, rgba(7, 7, 7, 0.58), transparent 50%);
+      box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--lh-accent) 42%, transparent),       /* edge light */
+        inset 0 22px 48px -16px color-mix(in srgb, var(--lh-accent) 36%, transparent),/* top inner glow */
+        inset 0 -56px 70px -40px rgba(7, 7, 7, 0.7);                                  /* base depth */
+    }
+
+    /* ::after = very light film grain, only on hover */
+    .lh-work-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      border-radius: inherit;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+      mix-blend-mode: soft-light;
+      opacity: 0;
+      transition: opacity var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover .lh-work-media::after {
+      opacity: 0.14;          /* keep it whisper-light */
+    }
+
+    /* ── Body: subtle depth + hairline that warms toward accent on hover ── */
+    .lh-work-body {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 18px 30px -28px rgba(0, 0, 0, 0.6);
+      transition: background var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: clamp(16px, 2vw, 22px);
+      right: clamp(16px, 2vw, 22px);
+      height: 1px;
+      background: var(--lh-line);
+      transition: background var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover .lh-work-body::before {
+      background: color-mix(in srgb, var(--lh-accent) 55%, transparent);
+    }
+
+    /* ── "View Case Study" — editorial label with animated arrow ────────── */
+    .lh-work-cta {
+      margin-top: auto;             /* pin to the bottom of the body */
+      padding-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lh-soft);
+      transition: color var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-cta-arrow {
+      display: inline-block;
+      transition: transform var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover .lh-work-cta {
+      color: var(--lh-accent);
+    }
+
+    .lh-work-card:hover .lh-work-cta-arrow {
+      transform: translateX(7px);
+    }
+
+    /* ── Editorial Project Metadata Grid ─────────────────────────────────── */
+    .lh-work-meta-grid {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(244, 240, 232, 0.08);
+      transition: border-color var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover .lh-work-meta-grid {
+      border-color: rgba(0, 240, 255, 0.22);
+    }
+
+    .lh-work-meta-item {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: transform var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover .lh-work-meta-item {
+      transform: translateY(-2px);
+    }
+
+    .lh-work-meta-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lh-soft);
+    }
+
+    .lh-work-meta-value {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--lh-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color var(--lh-dur-base) var(--lh-ease);
+    }
+
+    .lh-work-card:hover .lh-work-meta-value {
+      color: var(--lh-text);
+    }
+
+    .lh-work-desc {
+      transition: color var(--lh-dur-base) var(--lh-ease);
+    }
+    .lh-work-card:hover .lh-work-desc {
+      color: var(--lh-text);
+    }
+
+    /* Respect reduced motion: kill grain + arrow drift, keep states legible */
+    @media (prefers-reduced-motion: reduce) {
+      .lh-work-card > a.lh-stagger-in,
+      .lh-work-card > a.lh-stagger-out { animation: none; }
+      .lh-no-results { animation: none; }
+      .lh-work-card:hover .lh-work-media::after { opacity: 0; }
+      .lh-work-card:hover .lh-work-cta-arrow { transform: none; }
+      .lh-work-card:hover .lh-work-meta-item { transform: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="lh-page">
+
+<header class="lh-header">
+  <div class="lh-container lh-nav">
+    <a class="lh-brand" href="index.html" aria-label="Luong Huynh homepage">
+      <span class="lh-brand-mark">LH</span>
+      <span>Luong Huynh</span>
+    </a>
+    <button class="lh-mobile-toggle" type="button" data-menu-toggle aria-expanded="false">Menu</button>
+    <nav class="lh-menu" data-menu aria-label="Main navigation">
+      <a data-nav href="index.html">Homepage</a>
+      <a data-nav href="portfolio.html">Portfolio</a>
+      <a data-nav href="about.html">About</a>
+      <a class="lh-nav-cta" href="#contact">Available for Work</a>
+    </nav>
+  </div>
+</header>
+
+
+<main>
+  <section class="lh-section">
+    <div class="lh-container">
+      <div class="lh-section-head">
+        <div>
+          <p class="lh-section-kicker">Portfolio</p>
+          <h1 class="lh-section-title">A curated archive of 3D, AI, CGI, TVC and brand visuals.</h1>
+        </div>
+        <p class="lh-section-copy">An archive of campaign visuals, product renders, AI-generated imagery and visual direction work — across CGI, key visuals, branding and film.</p>
+      </div>
+      <div class="lh-filter-bar" aria-label="Portfolio filters">
+        <button class="lh-filter-btn is-active" data-filter="all">All</button>
+        <button class="lh-filter-btn" data-filter="3d">3D Model</button>
+        <button class="lh-filter-btn" data-filter="ai">AI Generated</button>
+        <button class="lh-filter-btn" data-filter="branding">Branding</button>
+        <button class="lh-filter-btn" data-filter="cgi">CGI</button>
+        <button class="lh-filter-btn" data-filter="feature">Recent Works</button>
+        <button class="lh-filter-btn" data-filter="film">Film</button>
+        <button class="lh-filter-btn" data-filter="keyvisual">Key Visuals</button>
+        <button class="lh-filter-btn" data-filter="tvc">TVC</button>
+        <button class="lh-filter-btn" data-filter="web">Web Design</button>
+      </div>
+      <p class="lh-filter-status" data-filter-status aria-live="polite"></p>
+      <div class="lh-work-grid">
+
+        <article class="lh-work-card" data-categories="tvc">
+          <a href="tvc-ovaltine-2015-adaptation.html" aria-label="Open TVC Ovaltine 2015 Adaptation case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/tvc-ovaltine-2015-adaptation.svg" alt="TVC Ovaltine 2015 Adaptation"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">TVC Ovaltine 2015 Adaptation</h3>
+              <p class="lh-work-desc">Campaign adaptation with cinematic product treatment.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">CGI & Compositing</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Ovaltine</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2015</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-size="feature" data-categories="cgi feature">
+          <a href="bt-studio-cgi-huda-football.html" aria-label="Open BT Studio – CGI Huda Football case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/bt-studio-cgi-huda-football.svg" alt="BT Studio – CGI Huda Football"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">BT Studio – CGI Huda Football</h3>
+              <p class="lh-work-desc">CGI beer-football visual system for energetic campaign assets.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">Art Direction & 3D</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Huda / BT Studio</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2023</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-size="tall" data-categories="ai branding">
+          <a href="stride-beyond.html" aria-label="Open Stride Beyond case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/stride-beyond.svg" alt="Stride Beyond"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Stride Beyond</h3>
+              <p class="lh-work-desc">AI-led identity exploration for a futuristic visual language.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">AI Art & Concept</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Personal Concept</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2026</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="3d ai">
+          <a href="cheers-to-victory.html" aria-label="Open Cheers to Victory case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/cheers-to-victory.svg" alt="Cheers to Victory"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Cheers to Victory</h3>
+              <p class="lh-work-desc">Victory-themed 3D/AI visual with energetic beer celebration mood.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Model & AI</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Personal Concept</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2025</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="3d keyvisual">
+          <a href="afc-key-visual.html" aria-label="Open AFC Key Visual case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/afc-key-visual.svg" alt="AFC Key Visual"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">AFC Key Visual</h3>
+              <p class="lh-work-desc">High-impact sports key visual direction and product composition.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Composition</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">AFC</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2024</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="3d keyvisual">
+          <a href="twister-pack-visual.html" aria-label="Open Twister Pack Visual case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/twister-pack-visual.svg" alt="Twister Pack Visual"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Twister Pack Visual</h3>
+              <p class="lh-work-desc">Pack-focused 3D visual built for retail and campaign usage.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Packshot</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Twister</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2022</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="3d keyvisual">
+          <a href="halida-tet-2022-key-visual.html" aria-label="Open Halida Tet 2022 Key Visual case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/halida-tet-2022-key-visual.svg" alt="Halida Tet 2022 Key Visual"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Halida Tet 2022 Key Visual</h3>
+              <p class="lh-work-desc">Seasonal Tet composition combining beer product and festive energy.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Illustration</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Halida Beer</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2021</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="3d keyvisual">
+          <a href="huda-beach-carnival-2023.html" aria-label="Open Huda Beach Carnival 2023 case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/huda-beach-carnival-2023.svg" alt="Huda Beach Carnival 2023"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Huda Beach Carnival 2023</h3>
+              <p class="lh-work-desc">Event visual with beach, summer, and brand-world atmosphere.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Environment</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Huda Beer</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2023</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="web">
+          <a href="circuit.html" aria-label="Open Circuit case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/circuit.svg" alt="Circuit"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Circuit</h3>
+              <p class="lh-work-desc">Visual interface direction for a modern digital product concept.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">UI/UX Direction</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Personal Concept</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2025</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="web">
+          <a href="spectral.html" aria-label="Open Spectral case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/spectral.svg" alt="Spectral"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Spectral</h3>
+              <p class="lh-work-desc">Editorial web concept with atmospheric motion and dark UI styling.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">Front-end & UI Art</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Concept Studio</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2026</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="branding">
+          <a href="nexora.html" aria-label="Open Nexora case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/nexora.svg" alt="Nexora"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Nexora</h3>
+              <p class="lh-work-desc">Brand system exploration with premium futuristic identity cues.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">Branding & Type</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Nexora Corp</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2025</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-size="wide" data-categories="film">
+          <a href="astralis.html" aria-label="Open Astralis case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/astralis.svg" alt="Astralis"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Astralis</h3>
+              <p class="lh-work-desc">Film-inspired visual direction with atmospheric narrative framing.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">Visual Direction</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Film Studio</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2024</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="branding cgi">
+          <a href="bt-studio-cgi-beverage-demo.html" aria-label="Open BT Studio – CGI Beverage Demo case study">
+            <div class="lh-work-media"><img src="assets/img/placeholders/bt-studio-cgi-beverage-demo.svg" alt="BT Studio – CGI Beverage Demo"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">BT Studio – CGI Beverage Demo</h3>
+              <p class="lh-work-desc">Product-led CGI beverage demo with polished advertising finish.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Liquid & Light</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">BT Studio</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2023</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+      </div>
+
+      <div class="lh-no-results" data-no-results hidden role="status" aria-live="polite">
+        <p class="lh-no-results-kicker">Empty Reel</p>
+        <h2 class="lh-no-results-title">Nothing in this cut</h2>
+        <p class="lh-no-results-copy" data-no-results-copy>No projects match the selected filters. Try another combination, or reset the archive to view the full body of work.</p>
+        <button class="lh-button" type="button" data-filter-reset>Reset Filters</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="lh-section-tight" id="contact">
+    <div class="lh-container">
+      <div class="lh-cta">
+        <p class="lh-section-kicker">Project Inquiry</p>
+        <h2>Need campaign visuals, CGI or AI art direction?</h2>
+        <div class="lh-hero-actions">
+          <a class="lh-button lh-button-primary" href="mailto:hello@luonghuynh.com">Get in Touch</a>
+          <a class="lh-button" href="about.html">About Luong</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+
+<footer class="lh-footer">
+  <div class="lh-container lh-footer-grid">
+    <div>© 2026 Luong Huynh. All rights reserved.</div>
+    <div class="lh-socials" aria-label="Social links">
+      <a href="https://behance.com" target="_blank" rel="noreferrer">Behance</a>
+      <a href="https://dribbble.com" target="_blank" rel="noreferrer">Dribbble</a>
+      <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+      <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
+</div>
+<script src="assets/js/main.js"></script>
+
+<!-- =====================================================
+     PORTFOLIO FILTER ENGINE
+     Multi-select (OR) · URL-hash sync (shareable) ·
+     staggered reveal in/out · cinematic "no results" state.
+     Page-scoped so the shared main.js stays generic.
+     ===================================================== -->
+<script>
+(function () {
+  var grid = document.querySelector('.lh-work-grid');
+  if (!grid) return;
+
+  var filterBtns   = Array.prototype.slice.call(document.querySelectorAll('.lh-filter-btn'));
+  var allBtn       = filterBtns.filter(function (b) { return b.dataset.filter === 'all'; })[0];
+  var cards        = Array.prototype.slice.call(grid.querySelectorAll('.lh-work-card'));
+  var statusEl     = document.querySelector('[data-filter-status]');
+  var noResults    = document.querySelector('[data-no-results]');
+  var noResultsCopy = document.querySelector('[data-no-results-copy]');
+  var resetBtn     = document.querySelector('[data-filter-reset]');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var labels = {};
+  filterBtns.forEach(function (b) { labels[b.dataset.filter] = b.textContent.trim(); });
+
+  var active = {};               // map of token -> true; empty = "All"
+  var hideTimers = {};
+  function activeList() { return Object.keys(active); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  function catsOf(card) {
+    return (card.dataset.categories || '').toLowerCase().split(/\s+/).filter(Boolean);
+  }
+  function matches(card) {
+    var keys = activeList();
+    if (!keys.length) return true;                       // no filter = show all
+    var cats = catsOf(card);
+    for (var i = 0; i < keys.length; i++) {              // OR logic
+      if (cats.indexOf(keys[i]) !== -1) return true;
+    }
+    return false;
+  }
+
+  function showCard(card, idx) {
+    var a = card.querySelector('a');
+    card.dataset.show = '1';
+    if (hideTimers[idx] != null) {}                      // (timers keyed per-card below)
+    if (card._hideTimer) { clearTimeout(card._hideTimer); card._hideTimer = null; }
+    card.hidden = false;
+    a.classList.remove('lh-stagger-out', 'lh-stagger-in');
+    if (reduce) return;
+    void a.offsetWidth;                                   // restart animation
+    var delay = Math.min(idx, 14) * 52;                   // cap the cascade length
+    a.style.setProperty('--lh-enter-delay', delay + 'ms');
+    a.classList.add('lh-stagger-in');
+  }
+
+  function hideCard(card) {
+    var a = card.querySelector('a');
+    card.dataset.show = '0';
+    if (card.hidden) return;
+    if (reduce) { card.hidden = true; return; }
+    a.classList.remove('lh-stagger-in');
+    void a.offsetWidth;
+    a.classList.add('lh-stagger-out');
+    if (card._hideTimer) clearTimeout(card._hideTimer);
+    card._hideTimer = setTimeout(function () {
+      if (card.dataset.show === '0') {                    // guard against rapid re-show
+        card.hidden = true;
+        a.classList.remove('lh-stagger-out');
+      }
+      card._hideTimer = null;
+    }, 300);
+  }
+
+  function syncButtons(visible) {
+    filterBtns.forEach(function (b) {
+      var on = (b === allBtn) ? activeList().length === 0 : !!active[b.dataset.filter];
+      b.classList.toggle('is-active', on);
+      if (b !== allBtn) b.setAttribute('aria-pressed', String(on));
+    });
+    if (statusEl) {
+      var total = cards.length;
+      if (!activeList().length) {
+        statusEl.innerHTML = '<b>' + pad(total) + '</b> projects \u00b7 full archive';
+      } else {
+        var names = activeList().map(function (f) { return labels[f] || f; }).join(' + ');
+        statusEl.innerHTML = '<b>' + pad(visible) + '</b> ' +
+          (visible === 1 ? 'result' : 'results') +
+          ' \u00b7 <span class="lh-fs-accent">' + names + '</span>';
+      }
+    }
+  }
+
+  function render(animate) {
+    var visible = 0, idx = 0;
+    cards.forEach(function (card) {
+      if (matches(card)) {
+        visible++;
+        if (animate === false) { card.hidden = false; card.dataset.show = '1'; }
+        else showCard(card, idx++);
+      } else {
+        if (animate === false) { card.hidden = true; card.dataset.show = '0'; }
+        else hideCard(card);
+      }
+    });
+    if (noResults) {
+      noResults.hidden = visible > 0;
+      if (!noResults.hidden && noResultsCopy && activeList().length) {
+        var names = activeList().map(function (f) { return labels[f] || f; }).join(', ');
+        noResultsCopy.textContent =
+          'No projects match ' + names + '. Try another combination, or reset the archive to view the full body of work.';
+      }
+    }
+    syncButtons(visible);
+  }
+
+  function syncHash() {
+    var base = location.pathname + location.search;
+    if (!activeList().length) history.replaceState(null, '', base);
+    else history.replaceState(null, '', base + '#filter=' + activeList().join(','));
+  }
+
+  function readTokens() {
+    var hash = location.hash.replace(/^#/, '');
+    var m = /(?:^|&)filter=([^&]*)/.exec(hash);
+    var raw = m ? m[1] : (hash && hash.indexOf('=') === -1 ? hash : '');
+    if (!raw) {
+      var qp = new URLSearchParams(location.search).get('filter');  // legacy ?filter=
+      raw = qp || '';
+    }
+    return raw ? decodeURIComponent(raw).split(',') : [];
+  }
+
+  function setActive(tokens) {
+    active = {};
+    tokens.forEach(function (t) {
+      t = (t || '').trim().toLowerCase();
+      if (t && t !== 'all' && labels.hasOwnProperty(t)) active[t] = true;
+    });
+  }
+
+  // --- interactions ---
+  filterBtns.forEach(function (btn) {
+    btn.setAttribute('type', 'button');
+    if (btn !== allBtn) btn.setAttribute('aria-pressed', 'false');
+    btn.addEventListener('click', function () {
+      var f = btn.dataset.filter;
+      if (f === 'all') active = {};
+      else if (active[f]) delete active[f];
+      else active[f] = true;
+      render(true);
+      syncHash();
+    });
+  });
+
+  if (resetBtn) resetBtn.addEventListener('click', function () {
+    active = {}; render(true); syncHash();
+  });
+
+  // back/forward or manually edited hash
+  window.addEventListener('hashchange', function () {
+    setActive(readTokens());
+    render(true);
+  });
+
+  // --- init from shared link / legacy query ---
+  setActive(readTokens());
+  render(true);
+  syncHash();
+})();
+</script>
+</body>
+</html>

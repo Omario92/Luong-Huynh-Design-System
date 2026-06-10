@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Header" subtitle="Logo · nav · Available for Work CTA" viewport="700x140" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Header</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 18px 28px; display: flex; flex-direction: column; gap: 10px; }
+  .bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--lh-line); }
+  .logo { font-family: var(--font-display); font-size: 18px; font-weight: 800; letter-spacing: -0.04em; }
+  .nav { display: flex; gap: 22px; align-items: center; }
+  .nav a { font-family: var(--font-body); font-size: 12px; letter-spacing: 0.14em; font-weight: 600; text-transform: uppercase; color: var(--fg-1); opacity: 0.8; }
+  .nav a.active { opacity: 1; }
+  .cta { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(244,240,232,0.28); font-size: 11px; letter-spacing: 0.12em; font-weight: 700; text-transform: uppercase; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #00f0ff; box-shadow: 0 0 12px #00f0ff; margin-right: 8px; }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+</style>
+</head><body>
+<div class="card">
+  <span class="label">.lh-header · sticky, hairline only on scroll</span>
+  <div class="bar">
+    <span class="logo">Luong Huynh</span>
+    <nav class="nav">
+      <a class="active">Homepage</a>
+      <a>Portfolio</a>
+      <a>About</a>
+    </nav>
+    <span class="cta"><span class="dot"></span>Available for Work</span>
+  </div>
+</div>
+</body></html>

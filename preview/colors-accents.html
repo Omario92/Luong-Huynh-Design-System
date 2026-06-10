@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- @dsCard group="Colors" name="Accents" subtitle="Acid lime (primary) · Amber (warm)" viewport="700x220" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Accents</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .accent { aspect-ratio: 16 / 9; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+  .accent .name { font-family: var(--font-display); font-weight: 800; font-size: 28px; letter-spacing: -0.04em; }
+  .accent .hex { font-family: var(--font-mono); font-size: 11px; opacity: 0.75; }
+  .cyan {
+    background: #00f0ff;
+    color: #070707;
+    box-shadow: 0 0 60px rgba(0, 240, 255, 0.35);
+  }
+  .indigo {
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 50%),
+      #6366f1;
+    color: #f4f0e8;
+  }
+  .meta { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; opacity: 0.75; }
+</style>
+</head><body>
+<div class="card">
+  <div class="accent cyan">
+    <div class="meta">Primary accent · use sparingly</div>
+    <div>
+      <div class="name">Neon Cyan</div>
+      <div class="hex">#00f0ff · --lh-accent · buttons, hover, glow</div>
+    </div>
+  </div>
+  <div class="accent indigo">
+    <div class="meta">Cool accent · gradient washes</div>
+    <div>
+      <div class="name">Electric Indigo</div>
+      <div class="hex">#6366f1 · --lh-accent-warm · borders, subtle glow</div>
+    </div>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- @dsCard group="Spacing" name="Elevation" subtitle="Surfaces & card hover lift" viewport="700x260" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Elevation</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 28px 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: stretch; }
+  .panel { border-radius: 20px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; border: 1px solid var(--lh-line); }
+  .panel.l0 { background: var(--lh-bg); }
+  .panel.l1 { background: var(--lh-bg-soft); }
+  .panel.l2 { background: var(--lh-panel); }
+  .panel.l3 { background: var(--lh-panel-2); border-color: var(--lh-line-strong); transform: translateY(-4px); }
+  .name { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: -0.03em; }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+</style>
+</head><body>
+<div class="card">
+  <div class="panel l0"><span class="name">Base</span><span class="meta">--bg-1 · #070707<br/>no border on body</span></div>
+  <div class="panel l2"><span class="name">Card · default</span><span class="meta">--bg-card · #151515<br/>line 14% · radius 32px</span></div>
+  <div class="panel l3"><span class="name">Card · hover</span><span class="meta">--bg-card-2 · #1c1c1c<br/>line 28% · translateY(-6px)</span></div>
+</div>
+</body></html>

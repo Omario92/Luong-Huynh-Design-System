@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- @dsCard group="Type" name="Heading scale" subtitle="Newake h1/h2 · Inter Tight h3 mixed-case" viewport="700x280" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Heading scale</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 26px 32px; display: grid; gap: 14px; }
+  .item { display: grid; grid-template-columns: 1fr 240px; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--lh-line); padding-bottom: 14px; }
+  .item:last-child { border-bottom: 0; }
+  .specimen { color: var(--fg-1); }
+  .h1 {
+    font-family: "Newake", "Inter Tight", sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 64px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+  .h2 {
+    font-family: "Newake", "Inter Tight", sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 40px;
+    letter-spacing: 0.15em;
+    line-height: 1.06;
+  }
+  .h3-alt {
+    font-family: "Inter Tight", sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .label { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); text-align: right; }
+</style>
+</head><body>
+<div class="card">
+  <div class="item">
+    <div class="specimen h1">Selected Works</div>
+    <div class="label">h1 · Newake · uppercase · +0.12em</div>
+  </div>
+  <div class="item">
+    <div class="specimen h2">3D &amp; CGI Visuals</div>
+    <div class="label">h2 · Newake · uppercase · +0.15em</div>
+  </div>
+  <div class="item">
+    <div class="specimen h3-alt">Stride Beyond</div>
+    <div class="label">h3 · Inter Tight 700 · mixed-case for card titles</div>
+  </div>
+</div>
+</body></html>

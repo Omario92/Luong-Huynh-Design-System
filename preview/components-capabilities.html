@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Capabilities grid" subtitle="Hairline grid · 4-up on desktop" viewport="700x320" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Capability grid</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid var(--lh-line); border-radius: 24px; overflow: hidden; background: var(--lh-line); }
+  .cell { background: var(--lh-bg-soft); padding: 22px; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; }
+  .num { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+  .title { font-family: var(--font-display); color: #f4f0e8; font-size: 22px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; max-width: 14ch; }
+</style>
+</head><body>
+<div class="card">
+  <div class="grid">
+    <div class="cell"><span class="num">01</span><div class="title">3D Product &amp; CGI Visuals</div></div>
+    <div class="cell"><span class="num">02</span><div class="title">AI-generated Campaign Imagery</div></div>
+    <div class="cell"><span class="num">03</span><div class="title">VFX, Compositing &amp; Post-production</div></div>
+    <div class="cell"><span class="num">04</span><div class="title">Visual Direction for Brand Campaigns</div></div>
+  </div>
+</div>
+</body></html>

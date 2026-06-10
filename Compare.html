@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Luong Huynh — Homepage Directions A / B</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="site/assets/css/styles.css">
+  <style>
+    html, body { height: 100%; margin: 0; overflow: hidden; background: #050505; }
+    .cmp {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background: #050505;
+    }
+
+    /* ── Toolbar ──────────────────────────────────────── */
+    .cmp-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 clamp(16px, 2vw, 28px);
+      height: 60px;
+      border-bottom: 1px solid var(--lh-line);
+      background: rgba(7,7,7,0.92);
+    }
+    .cmp-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lh-text);
+      white-space: nowrap;
+    }
+    .cmp-brand .lh-brand-mark { width: 28px; height: 28px; font-size: 9px; }
+    .cmp-brand small {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--lh-muted);
+    }
+
+    .cmp-seg {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--lh-line);
+      border-radius: var(--lh-pill);
+      background: rgba(244,240,232,0.03);
+    }
+    .cmp-seg button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--lh-muted);
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: var(--lh-pill);
+      cursor: pointer;
+      transition: color var(--lh-dur-fast) var(--lh-ease), background var(--lh-dur-fast) var(--lh-ease);
+    }
+    .cmp-seg button:hover { color: var(--lh-text); }
+    .cmp-seg button.is-active { background: var(--lh-accent); color: var(--lh-on-accent); }
+
+    .cmp-actions { display: flex; gap: 10px; align-items: center; }
+    .cmp-actions a {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--lh-muted);
+      border: 1px solid var(--lh-line);
+      border-radius: var(--lh-pill);
+      padding: 8px 14px;
+      transition: border-color var(--lh-dur-fast) var(--lh-ease), color var(--lh-dur-fast) var(--lh-ease);
+    }
+    .cmp-actions a:hover { color: var(--lh-text); border-color: var(--lh-line-strong); }
+
+    /* ── Panes ────────────────────────────────────────── */
+    .cmp-stage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 0;
+    }
+    .cmp-stage[data-mode="a"] { grid-template-columns: 1fr 0fr; }
+    .cmp-stage[data-mode="b"] { grid-template-columns: 0fr 1fr; }
+
+    .cmp-pane {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-width: 0;
+      min-height: 0;
+      border-right: 1px solid var(--lh-line);
+      overflow: hidden;
+    }
+    .cmp-pane:last-child { border-right: 0; }
+    .cmp-stage[data-mode="a"] .cmp-pane.b,
+    .cmp-stage[data-mode="b"] .cmp-pane.a { display: none; }
+
+    .cmp-pane-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 12px clamp(14px, 2vw, 22px);
+      border-bottom: 1px solid var(--lh-line);
+      background: var(--lh-bg-soft);
+    }
+    .cmp-pane-head .k {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--lh-accent);
+    }
+    .cmp-pane-head .t {
+      font-family: var(--font-display-alt);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--lh-text);
+    }
+    .cmp-pane-head .d {
+      font-size: 12px;
+      color: var(--lh-muted);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    @media (max-width: 900px) { .cmp-pane-head .d { display: none; } }
+
+    .cmp-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: var(--lh-bg);
+    }
+
+    .cmp-hint {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      color: var(--lh-muted);
+      background: rgba(7,7,7,0.86);
+      border: 1px solid var(--lh-line);
+      border-radius: var(--lh-pill);
+      padding: 7px 16px;
+      pointer-events: none;
+      transition: opacity .4s ease;
+    }
+  </style>
+</head>
+<body>
+<div class="cmp">
+
+  <div class="cmp-bar">
+    <div class="cmp-brand">
+      <span class="lh-brand-mark">LH</span>
+      <span>Homepage Directions</span>
+      <small>refine &amp; compare</small>
+    </div>
+    <div class="cmp-seg" role="tablist" aria-label="View mode">
+      <button data-mode="both" class="is-active">Side by side</button>
+      <button data-mode="a">Direction A</button>
+      <button data-mode="b">Direction B</button>
+    </div>
+    <div class="cmp-actions">
+      <a href="site/index-a.html" target="_blank" rel="noopener">Open A ↗</a>
+      <a href="site/index-b.html" target="_blank" rel="noopener">Open B ↗</a>
+    </div>
+  </div>
+
+  <div class="cmp-stage" data-mode="both" id="stage">
+    <div class="cmp-pane a">
+      <div class="cmp-pane-head">
+        <span class="k">A</span>
+        <span class="t">Editorial Grid</span>
+        <span class="d">Asymmetric grid · framed imagery · numbered index</span>
+      </div>
+      <iframe class="cmp-frame" src="site/index-a.html" title="Direction A — Editorial Grid" loading="eager"></iframe>
+    </div>
+    <div class="cmp-pane b">
+      <div class="cmp-pane-head">
+        <span class="k">B</span>
+        <span class="t">Cinematic Full-bleed</span>
+        <span class="d">Full-bleed hero · alternating spotlights · image-forward</span>
+      </div>
+      <iframe class="cmp-frame" src="site/index-b.html" title="Direction B — Cinematic Full-bleed" loading="eager"></iframe>
+    </div>
+  </div>
+
+</div>
+
+<div class="cmp-hint" id="hint">Each pane scrolls independently · use the toggle to focus one direction</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const seg = document.querySelectorAll('.cmp-seg button');
+  const hint = document.getElementById('hint');
+
+  function setMode(mode) {
+    stage.dataset.mode = mode;
+    seg.forEach(b => b.classList.toggle('is-active', b.dataset.mode === mode));
+    try { localStorage.setItem('lh-cmp-mode', mode); } catch (e) {}
+  }
+
+  seg.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+  // Restore last view
+  try {
+    const saved = localStorage.getItem('lh-cmp-mode');
+    if (saved) setMode(saved);
+  } catch (e) {}
+
+  // Fade the hint after a few seconds
+  setTimeout(() => { hint.style.opacity = '0'; }, 4200);
+</script>
+</body>
+</html>

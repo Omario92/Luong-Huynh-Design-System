@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="g" cx="62%" cy="32%" r="78%">
+      <stop offset="0%" stop-color="#ff5c5c" stop-opacity="0.55"></stop>
+      <stop offset="38%" stop-color="#2a1010" stop-opacity="1"></stop>
+      <stop offset="100%" stop-color="#070707" stop-opacity="1"></stop>
+    </radialGradient>
+    <linearGradient id="grain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000" stop-opacity="0"></stop>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.55"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="#070707"></rect>
+  <rect width="800" height="1000" fill="url(#g)"></rect>
+  <rect width="800" height="1000" fill="url(#grain)"></rect>
+  <g font-family="Inter Tight, system-ui, sans-serif" fill="#f4f0e8" fill-opacity="0.92">
+    <text x="48" y="84" font-size="22" letter-spacing="6" font-weight="700">LH · 09</text>
+    <text x="48" y="940" font-size="28" letter-spacing="4" font-weight="700" text-transform="uppercase" fill="#9b978f">KEY VISUAL</text>
+  </g>
+  <circle cx="752" cy="64" r="6" fill="#ff5c5c"></circle>
+</svg>

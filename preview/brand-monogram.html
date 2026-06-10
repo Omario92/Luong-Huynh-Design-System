@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- @dsCard group="Brand" name="Monogram" subtitle="LH · favicon / avatar usage" viewport="700x240" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Monogram</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: center; }
+  .tile { aspect-ratio: 1; background: #070707; border: 1px solid var(--lh-line); border-radius: 20px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .tile.ivory { background: #f4f0e8; }
+  .tile.lime { background: #00f0ff; }
+  .tile.panel { background: #151515; }
+  .lh { font-family: 'Inter Tight', system-ui, sans-serif; font-weight: 800; letter-spacing: -0.07em; line-height: 1; color: #f4f0e8; font-size: 56px; }
+  .tile.ivory .lh { color: #070707; }
+  .tile.lime .lh { color: #070707; }
+  .dot { position: absolute; top: 14px; right: 14px; width: 8px; height: 8px; border-radius: 50%; background: #00f0ff; }
+  .tile.lime .dot, .tile.ivory .dot { background: #070707; }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); margin-top: 8px; text-align: center; display: block; letter-spacing: 0; }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+</style>
+</head><body>
+<div class="card">
+  <div class="wrap"><div class="tile"><span class="lh">LH</span><span class="dot"></span></div><span class="meta">primary</span></div>
+  <div class="wrap"><div class="tile panel"><span class="lh">LH</span><span class="dot"></span></div><span class="meta">on panel</span></div>
+  <div class="wrap"><div class="tile lime"><span class="lh">LH</span><span class="dot"></span></div><span class="meta">on accent</span></div>
+  <div class="wrap"><div class="tile ivory"><span class="lh">LH</span><span class="dot"></span></div><span class="meta">inverted</span></div>
+</div>
+</body></html>

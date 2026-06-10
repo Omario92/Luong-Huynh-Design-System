@@ -1,0 +1,318 @@
+/* kit.css — UI kit additions on top of _source/luong-portfolio.css.
+   Kit-only concerns (header layout, page transitions, sheet, etc.).        */
+
+/* --- Header --------------------------------------------------------- */
+.lh-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(7, 7, 7, 0.85);
+  border-bottom: 1px solid transparent;
+}
+.lh-header.is-scrolled { border-bottom-color: var(--lh-line); }
+.lh-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 18px;
+}
+.lh-logo {
+  font-family: "Inter Tight", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.045em;
+  color: var(--lh-text);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lh-nav { display: flex; gap: 24px; align-items: center; }
+.lh-nav-link {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--lh-text);
+  opacity: 0.62;
+  transition: opacity .25s var(--lh-ease);
+}
+.lh-nav-link:hover { opacity: 0.92; }
+.lh-nav-link.is-active { opacity: 1; }
+.lh-nav-link.is-active::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-top: 6px;
+  background: var(--lh-text);
+}
+
+.lh-availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 240, 232, 0.28);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--lh-text);
+}
+.lh-availability-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lh-accent);
+  box-shadow: 0 0 12px var(--lh-accent);
+}
+
+/* --- Hero copy + CTAs ---------------------------------------------- */
+.lh-hero { display: flex; flex-direction: column; justify-content: flex-end; }
+.lh-hero .lh-container {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2vw, 28px);
+}
+.lh-cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+
+/* --- Section header pattern ---------------------------------------- */
+.lh-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: clamp(28px, 4vw, 56px);
+  max-width: 880px;
+}
+.lh-section-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: clamp(40px, 5.4vw, 80px);
+  letter-spacing: 0.13em;
+  line-height: 1.04;
+  color: var(--lh-text);
+}
+.lh-section-foot { margin-top: clamp(28px, 4vw, 56px); display: flex; justify-content: center; }
+
+/* --- Work card / grid (extends _source) ---------------------------- */
+.lh-work-card { text-decoration: none; color: inherit; display: block; }
+.lh-work-info { display: flex; flex-direction: column; gap: 10px; }
+.lh-work-info h3 {
+  font-family: var(--font-display-alt);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.04em;
+}
+
+/* --- Capabilities (extends _source) -------------------------------- */
+.lh-capability-card { gap: 16px; }
+.lh-capability-num {
+  display: block;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--lh-muted);
+  letter-spacing: 0;
+}
+.lh-capability-card h3 {
+  font-family: var(--font-display-alt);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.035em;
+  margin-bottom: 10px;
+}
+
+/* --- About teaser -------------------------------------------------- */
+.lh-about-teaser { display: flex; flex-direction: column; gap: 24px; max-width: 800px; }
+.lh-about-bio {
+  /* large editorial sentence — keep mixed case here so it reads as body, not banner.
+     Uses the alt display (Inter Tight) since Newake demo is caps-only. */
+  font-family: var(--font-display-alt);
+  color: var(--lh-text);
+  font-size: clamp(28px, 3.5vw, 56px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* --- Page-level titles --------------------------------------------- */
+.lh-page-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: clamp(56px, 9.5vw, 160px);
+  letter-spacing: 0.10em;
+  line-height: 0.98;
+  color: var(--lh-text);
+  margin: 0;
+}
+
+/* --- About page hero ---------------------------------------------- */
+.lh-about-hero { padding-block: clamp(120px, 14vw, 200px) clamp(48px, 7vw, 96px); }
+.lh-about-hero .lh-container { display: flex; flex-direction: column; gap: 22px; }
+.lh-about-hero .lh-hero-copy {
+  max-width: 800px;
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: rgba(244, 240, 232, 0.82);
+}
+
+/* --- Services grid (About) ----------------------------------------- */
+.lh-services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--lh-line);
+  border: 1px solid var(--lh-line);
+  border-radius: var(--lh-radius-lg);
+  overflow: hidden;
+}
+.lh-service-card {
+  background: var(--lh-bg-soft);
+  padding: clamp(24px, 3vw, 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 240px;
+}
+.lh-service-head { display: flex; align-items: baseline; gap: 14px; }
+.lh-service-num {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--lh-muted);
+}
+.lh-service-card h3 {
+  font-family: var(--font-display-alt);
+  font-weight: 700;
+  text-transform: none;
+  font-size: clamp(22px, 2.2vw, 36px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--lh-text);
+}
+.lh-service-card p {
+  color: var(--lh-muted);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* --- Portfolio header --------------------------------------------- */
+.lh-portfolio-head { padding-block: clamp(120px, 14vw, 200px) clamp(40px, 5vw, 64px); }
+.lh-portfolio-head .lh-container { display: flex; flex-direction: column; gap: 22px; }
+.lh-empty {
+  color: var(--lh-muted);
+  font-size: 18px;
+  padding: 80px 0;
+  text-align: center;
+}
+
+/* --- Footer ------------------------------------------------------- */
+.lh-footer-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.lh-footer-cta h2 { margin: 0; max-width: 16ch; }
+.lh-footer-bottom {
+  margin-top: clamp(48px, 6vw, 96px);
+  padding-top: 24px;
+  border-top: 1px solid var(--lh-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.lh-footer-bottom .meta {
+  color: var(--lh-muted);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.lh-social-row { display: flex; gap: 18px; align-items: center; }
+.lh-social {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.78;
+  transition: opacity .25s var(--lh-ease);
+}
+.lh-social:hover { opacity: 1; }
+
+/* --- Project sheet (modal overlay) -------------------------------- */
+.lh-sheet {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(7, 7, 7, 0.72);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: clamp(16px, 3vw, 40px);
+  animation: fade .25s var(--lh-ease) both;
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.lh-sheet-inner {
+  position: relative;
+  background: var(--lh-panel);
+  border: 1px solid var(--lh-line);
+  border-radius: var(--lh-radius-lg);
+  max-width: 1080px;
+  width: 100%;
+  max-height: 88vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  animation: rise .35s var(--lh-ease) both;
+}
+@keyframes rise { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+.lh-sheet-media { background: #0a0a0a; aspect-ratio: 4/5; max-height: 88vh; }
+.lh-sheet-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lh-sheet-body {
+  padding: clamp(24px, 3vw, 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: auto;
+}
+.lh-sheet-body h2 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: clamp(32px, 3.3vw, 58px);
+  letter-spacing: 0.11em;
+  line-height: 1.06;
+  margin: 0;
+}
+.lh-sheet-note { color: var(--lh-muted); font-size: 15px; line-height: 1.55; }
+.lh-sheet-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 240, 232, 0.28);
+  background: rgba(7, 7, 7, 0.6);
+  color: var(--lh-text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  z-index: 2;
+}
+.lh-sheet-close:hover { background: var(--lh-text); color: #070707; }
+
+/* --- Responsive --------------------------------------------------- */
+@media (max-width: 1080px) {
+  .lh-availability { display: none; }
+}
+@media (max-width: 900px) {
+  .lh-header-inner { flex-wrap: wrap; gap: 16px; }
+  .lh-nav { gap: 16px; }
+  .lh-sheet-inner { grid-template-columns: 1fr; }
+  .lh-sheet-media { aspect-ratio: 16/11; }
+  .lh-services-grid { grid-template-columns: 1fr; }
+}

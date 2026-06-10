@@ -1,0 +1,1350 @@
+/* =====================================================
+   LUONG HUYNH PORTFOLIO — GLOBAL STYLESHEET
+   Direction: Cinematic Digital Artist Portfolio
+   Design source: Design Files/colors_and_type.css
+   Elementor usage: copy into Site Settings > Custom CSS
+   ===================================================== */
+
+/* ── 1. FONTS ─────────────────────────────────────────
+   Inter + Inter Tight + JetBrains Mono via Google Fonts
+   Newake display face (brand-owned) via @font-face     */
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap");
+
+@font-face {
+  font-family: "Newake";
+  src: url("../fonts/NewakeFont-Demo.otf") format("opentype");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── 2. DESIGN TOKENS ─────────────────────────────────
+   All custom properties use the lh- prefix.
+   Source of truth: Design Files/colors_and_type.css    */
+:root {
+  /* Base */
+  --lh-bg:           #070707;
+  --lh-bg-soft:      #101010;
+  --lh-panel:        #151515;
+  --lh-panel-2:      #1c1c1c;
+
+  /* Foreground */
+  --lh-text:         #f4f0e8;
+  --lh-muted:        #9b978f;
+  --lh-soft:         #6b6760;
+
+  /* Borders */
+  --lh-line:         rgba(244, 240, 232, 0.14);
+  --lh-line-strong:  rgba(244, 240, 232, 0.28);
+
+  /* Accents */
+  --lh-accent:       #00f0ff;   /* neon cyan — primary, used once per section */
+  --lh-accent-warm:  #6366f1;   /* electric indigo — gradient washes only */
+  --lh-on-accent:    #070707;
+
+  /* Semantic aliases (match Design Files/colors_and_type.css) */
+  --fg-1:      var(--lh-text);
+  --fg-2:      var(--lh-muted);
+  --fg-accent: var(--lh-accent);
+  --fg-on-accent: var(--lh-on-accent);
+  --bg-1:      var(--lh-bg);
+  --bg-2:      var(--lh-bg-soft);
+  --bg-card:   var(--lh-panel);
+  --bg-card-2: var(--lh-panel-2);
+
+  /* Radii */
+  --lh-radius-sm:    12px;
+  --lh-radius-md:    20px;
+  --lh-radius-lg:    32px;
+  --lh-pill:         999px;
+
+  /* Spacing scale */
+  --lh-space-1:  4px;
+  --lh-space-2:  8px;
+  --lh-space-3:  12px;
+  --lh-space-4:  16px;
+  --lh-space-5:  24px;
+  --lh-space-6:  32px;
+  --lh-space-7:  48px;
+  --lh-space-8:  72px;
+  --lh-space-9:  120px;
+
+  /* Layout */
+  --lh-max:          1440px;
+  --lh-gutter:       clamp(20px, 5vw, 72px);
+  --lh-section-y:    clamp(72px, 10vw, 160px);
+
+  /* Motion */
+  --lh-ease:         cubic-bezier(.16, 1, .3, 1);
+  --lh-dur-fast:     0.25s;
+  --lh-dur-base:     0.45s;
+  --lh-dur-slow:     0.9s;
+
+  /* Type families */
+  --font-display:     "Newake", "Inter Tight", "Bebas Neue", "Anton", ui-sans-serif, system-ui, sans-serif;
+  --font-display-alt: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-body:        "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:        "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Type scale tokens (from Design Files/colors_and_type.css) */
+  --type-hero-size:    clamp(64px, 14vw, 200px);
+  --type-hero-lh:      0.92;
+  --type-hero-track:   0.10em;
+  --type-hero-weight:  400;
+
+  --type-h1-size:    clamp(48px, 9vw, 140px);
+  --type-h1-lh:      0.94;
+  --type-h1-track:   0.12em;
+  --type-h1-weight:  400;
+
+  --type-h2-size:    clamp(32px, 4vw, 64px);
+  --type-h2-lh:      1;
+  --type-h2-track:   0.15em;
+  --type-h2-weight:  400;
+
+  --type-h3-size:    clamp(24px, 2.6vw, 44px);
+  --type-h3-lh:      1.02;
+  --type-h3-track:   0.11em;
+  --type-h3-weight:  400;
+
+  --type-lead-size:   clamp(18px, 2vw, 30px);
+  --type-lead-lh:     1.22;
+  --type-lead-track:  -0.03em;
+  --type-lead-weight: 400;
+
+  --type-body-size:   16px;
+  --type-body-lh:     1.55;
+  --type-body-track:  -0.005em;
+
+  --type-eyebrow-size:   clamp(11px, 0.85vw, 13px);
+  --type-eyebrow-track:  0.16em;
+  --type-eyebrow-weight: 700;
+
+  --type-meta-size:   12px;
+  --type-meta-track:  0.14em;
+  --type-meta-weight: 600;
+
+  --type-tag-size:   10px;
+  --type-tag-track:  0.12em;
+  --type-tag-weight: 700;
+}
+
+/* ── 3. RESET & BASE ──────────────────────────────────*/
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  background: var(--lh-bg);
+}
+
+body {
+  margin: 0;
+  background: var(--lh-bg);
+  color: var(--lh-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--lh-text);
+  text-transform: uppercase;
+}
+
+p { margin: 0 0 1em; }
+
+a { color: inherit; text-decoration: none; }
+
+img, svg, video { max-width: 100%; display: block; }
+
+button, input, textarea { font: inherit; }
+
+::selection {
+  background: var(--lh-accent);
+  color: var(--lh-on-accent);
+}
+
+/* ── 4. LAYOUT PRIMITIVES ─────────────────────────────*/
+.lh-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.lh-page.lh-page-transition {
+  opacity: 0;
+  transform: scale(0.985);
+  transform-origin: center top;
+  transition: opacity 0.45s cubic-bezier(0.25, 1, 0.5, 1), transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.lh-page.lh-page-transition.is-loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lh-page.lh-page-transition.is-exiting {
+  opacity: 0;
+  transform: scale(0.985);
+}
+
+.lh-container {
+  width: min(calc(100vw - (var(--lh-gutter) * 2)), var(--lh-max));
+  margin-inline: auto;
+}
+
+.lh-section {
+  padding-block: var(--lh-section-y);
+  position: relative;
+}
+
+.lh-section-tight {
+  padding-block: clamp(48px, 7vw, 96px);
+  position: relative;
+}
+
+/* Muted section variant — subtle soft bg with faint glow */
+.lh-section-muted {
+  background:
+    radial-gradient(circle at top left, rgba(0, 240, 255, 0.05), transparent 34vw),
+    var(--lh-bg-soft);
+}
+
+/* ── 5. HEADER ────────────────────────────────────────
+   Sticky. No backdrop-blur — dark base provides separation.
+   Hairline border always visible.                         */
+.lh-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(7, 7, 7, 0.90);
+  border-bottom: 1px solid var(--lh-line);
+}
+
+.lh-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  gap: 20px;
+}
+
+.lh-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lh-text);
+  flex-shrink: 0;
+}
+
+.lh-brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--lh-accent);
+  color: var(--lh-on-accent);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.lh-menu {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 3vw, 32px);
+}
+
+.lh-menu a {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lh-muted);
+  transition: color var(--lh-dur-fast) var(--lh-ease);
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.lh-menu a:hover,
+.lh-menu a[aria-current="page"] { color: var(--lh-text); }
+
+.lh-menu a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 1px;
+  background: var(--lh-text);
+  border-radius: var(--lh-pill);
+}
+
+.lh-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 14px;
+  border: 1px solid var(--lh-line-strong);
+  border-radius: var(--lh-pill);
+  color: var(--lh-text);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: border-color var(--lh-dur-fast) var(--lh-ease);
+}
+
+/* Pulsing cyan dot — "Available for Work" indicator */
+.lh-nav-cta::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lh-accent);
+  box-shadow: 0 0 10px var(--lh-accent);
+  flex-shrink: 0;
+}
+
+.lh-nav-cta:hover { border-color: var(--lh-text); }
+
+.lh-mobile-toggle { display: none; }
+
+/* ── 6. HERO ──────────────────────────────────────────
+   Bottom-left aligned. Massive Newake display type.
+   Radial gradient washes + subtle dot-grid overlay.   */
+.lh-hero {
+  min-height: min(860px, 92vh);
+  display: grid;
+  align-items: end;
+  padding-block: clamp(96px, 12vw, 180px) clamp(56px, 7vw, 96px);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 78% 35%, rgba(0, 240, 255, 0.12), rgba(0, 150, 136, 0.08) 15vw, transparent 32vw),
+    radial-gradient(circle at 20% 85%, rgba(99, 102, 241, 0.14), transparent 26vw),
+    var(--lh-bg);
+}
+
+/* Subtle dot-grid atmosphere — matches cinematic black-room aesthetic */
+.lh-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(244, 240, 232, 0.055) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 100%);
+}
+
+.lh-hero-grid {
+  width: 100%;
+}
+
+.lh-hero-visual {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1;
+  margin-inline: auto;
+  margin-top: 32px;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .lh-hero-visual {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    width: 50vw;
+    height: 100%;
+    max-width: none;
+    aspect-ratio: auto;
+    margin-inline: 0;
+    margin-top: 0;
+    pointer-events: none;
+  }
+}
+
+.lh-hero-body {
+  max-width: 1100px;
+  position: relative;
+  z-index: 5;
+}
+
+@media (min-width: 768px) {
+  .lh-hero-body {
+    max-width: 75%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .lh-hero-body {
+    max-width: 85%;
+  }
+}
+
+.lh-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--lh-accent);
+  font-family: var(--font-body);
+  font-size: var(--type-eyebrow-size);
+  font-weight: var(--type-eyebrow-weight);
+  letter-spacing: var(--type-eyebrow-track);
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: clamp(20px, 3vw, 28px);
+}
+
+.lh-hero-title {
+  margin: 0 0 clamp(20px, 3vw, 36px);
+  font-family: var(--font-display);
+  font-size: var(--type-hero-size);
+  line-height: var(--type-hero-lh);
+  letter-spacing: var(--type-hero-track);
+  font-weight: var(--type-hero-weight);
+  text-transform: uppercase;
+  color: var(--lh-text);
+  max-width: 14ch;
+}
+
+/* Remove lime gradient — plain ivory text in Newake */
+.lh-text-gradient {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: inherit;
+}
+
+.lh-hero-copy {
+  max-width: 680px;
+  color: rgba(244, 240, 232, 0.82);
+  font-family: var(--font-body);
+  font-size: clamp(18px, 2vw, 26px);
+  line-height: 1.28;
+  letter-spacing: -0.03em;
+  margin: 0 0 clamp(28px, 4vw, 48px);
+}
+
+.lh-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* ── 7. BUTTONS ───────────────────────────────────────*/
+.lh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 14px 22px;
+  border-radius: var(--lh-pill);
+  border: 1px solid var(--lh-line-strong);
+  background: transparent;
+  color: var(--lh-text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    transform var(--lh-dur-base) var(--lh-ease),
+    background var(--lh-dur-base) var(--lh-ease),
+    border-color var(--lh-dur-base) var(--lh-ease),
+    color var(--lh-dur-base) var(--lh-ease);
+}
+
+.lh-button:hover {
+  transform: translateY(-2px);
+  background: rgba(244, 240, 232, 0.08);
+  border-color: var(--lh-text);
+}
+
+/* Primary — neon cyan fill, hover shifts to warm ivory */
+.lh-button-primary {
+  background: var(--lh-accent);
+  border-color: var(--lh-accent);
+  color: var(--lh-on-accent);
+}
+
+.lh-button-primary:hover {
+  background: var(--lh-text);
+  border-color: var(--lh-text);
+  color: var(--lh-on-accent);
+}
+
+.lh-section-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(28px, 4vw, 48px);
+}
+
+/* ── 8. SECTION HEAD ──────────────────────────────────*/
+.lh-section-head {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 420px);
+  gap: 32px;
+  align-items: end;
+  margin-bottom: clamp(34px, 5vw, 64px);
+}
+
+.lh-section-kicker {
+  color: var(--lh-accent);
+  font-family: var(--font-body);
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  line-height: 1;
+}
+
+.lh-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 80px);
+  line-height: 0.96;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.lh-section-copy {
+  margin: 0;
+  color: var(--lh-muted);
+  font-family: var(--font-body);
+  line-height: 1.65;
+  font-size: 16px;
+}
+
+/* ── 9. WORK GRID & CARDS ─────────────────────────────
+   4:5 portrait aspect ratio on desktop.
+   No drop shadows — depth via border alpha + bg step.  */
+.lh-work-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.2vw, 28px);
+}
+
+.lh-work-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--lh-line);
+  border-radius: var(--lh-radius-lg);
+  background: var(--lh-panel);
+  display: flex;
+  flex-direction: column;
+  transition:
+    border-color var(--lh-dur-base) var(--lh-ease),
+    background var(--lh-dur-base) var(--lh-ease);
+  will-change: transform;
+}
+
+.lh-work-card:hover {
+  border-color: var(--lh-line-strong);
+  background: var(--lh-panel-2);
+}
+
+.lh-work-card[hidden] { display: none; }
+
+.lh-work-card > a {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  color: inherit;
+}
+
+/* Top corners match card radius; bottom corners are radius-md */
+.lh-work-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius:
+    calc(var(--lh-radius-lg) - 1px)
+    calc(var(--lh-radius-lg) - 1px)
+    var(--lh-radius-md)
+    var(--lh-radius-md);
+  background: #111;
+}
+
+.lh-work-media img,
+.lh-work-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.001);
+  transition:
+    transform var(--lh-dur-slow) var(--lh-ease),
+    filter var(--lh-dur-slow) var(--lh-ease);
+}
+
+/* Cinematic reveal on hover — scale + contrast/saturation lift */
+.lh-work-card:hover .lh-work-media img,
+.lh-work-card:hover .lh-work-media video {
+  transform: scale(1.055);
+  filter: contrast(1.08) saturate(1.08);
+}
+
+/* lh-work-body = existing HTML; lh-work-info = design-system alias */
+.lh-work-body,
+.lh-work-info {
+  padding: clamp(16px, 2vw, 22px);
+  flex: 1;
+}
+
+/* Card titles: Inter Tight (mixed-case) — Newake demo is uppercase-only */
+.lh-work-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display-alt);
+  font-size: clamp(18px, 1.8vw, 28px);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  font-weight: 700;
+  text-transform: none;
+  color: var(--lh-text);
+}
+
+.lh-work-desc {
+  margin: 0;
+  color: var(--lh-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── 10. TAGS & CHIPS ─────────────────────────────────*/
+.lh-meta-row,
+.lh-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.lh-tag,
+.lh-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 9px;
+  border: 1px solid var(--lh-line);
+  border-radius: var(--lh-pill);
+  color: rgba(244, 240, 232, 0.72);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  background: transparent;
+}
+
+.lh-chip-strong {
+  background: var(--lh-accent);
+  border-color: var(--lh-accent);
+  color: var(--lh-on-accent);
+}
+
+/* ── 11. FILTER BAR ───────────────────────────────────*/
+.lh-filter-bar,
+.lh-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+
+.lh-filter-btn,
+.lh-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 8px 14px;
+  border: 1px solid var(--lh-line);
+  border-radius: var(--lh-pill);
+  color: var(--lh-muted);
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color var(--lh-dur-fast) var(--lh-ease),
+    background var(--lh-dur-fast) var(--lh-ease),
+    border-color var(--lh-dur-fast) var(--lh-ease);
+}
+
+.lh-filter-btn:hover,
+.lh-filter-pill:hover,
+.lh-filter-btn.is-active,
+.lh-filter-pill.is-active {
+  color: var(--lh-on-accent);
+  background: var(--lh-accent);
+  border-color: var(--lh-accent);
+}
+
+/* ── 12. SERVICE / CAPABILITY GRID ───────────────────
+   1px-gap grid: wrapper background = gap color (--lh-line).
+   Cells sit on --lh-bg-soft, creating hairline dividers.  */
+.lh-service-grid,
+.lh-capabilities {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--lh-line);
+  border-radius: var(--lh-radius-lg);
+  overflow: hidden;
+  background: var(--lh-line);
+}
+
+.lh-service-card,
+.lh-capability-card {
+  min-height: 260px;
+  padding: clamp(20px, 2.6vw, 36px);
+  background: var(--lh-bg-soft);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(16px, 2.2vw, 28px);
+}
+
+.lh-service-card > div,
+.lh-capability-card > div {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 12px;
+}
+
+.lh-service-number {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--lh-muted);
+  letter-spacing: 0;
+}
+
+/* Inter Tight for service titles — mixed-case, readable */
+.lh-service-title,
+.lh-capability-card h3 {
+  margin: 0;
+  font-family: var(--font-display-alt);
+  font-size: clamp(20px, 1.8vw, 28px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-transform: none;
+  color: var(--lh-text);
+}
+
+@media (min-width: 768px) {
+  .lh-service-title,
+  .lh-capability-card h3 {
+    min-height: 2.2em; /* Ensures titles occupy consistent space for alignment */
+  }
+}
+
+.lh-service-copy,
+.lh-capability-card p {
+  margin: 0;
+  margin-top: 0; /* Remove auto-push to align copy to the same row */
+  color: var(--lh-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ── 13. MARQUEE ──────────────────────────────────────*/
+.lh-marquee {
+  display: flex;
+  overflow: hidden;
+  border-block: 1px solid var(--lh-line);
+  color: rgba(244, 240, 232, 0.07);
+  font-family: var(--font-display);
+  font-size: clamp(52px, 10vw, 140px);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.lh-marquee span {
+  display: inline-block;
+  padding: 20px 30px;
+  animation: lh-marquee 32s linear infinite;
+}
+
+@keyframes lh-marquee { to { transform: translateX(-100%); } }
+
+/* ── 14. ABOUT PAGE ───────────────────────────────────*/
+.lh-about-grid {
+  display: grid;
+  grid-template-columns: 0.78fr 1.1fr;
+  gap: clamp(36px, 6vw, 86px);
+  align-items: start;
+}
+
+.lh-portrait-panel {
+  position: sticky;
+  top: 90px;
+  border-radius: var(--lh-radius-lg);
+  padding: 14px;
+  background: var(--lh-panel);
+  border: 1px solid var(--lh-line);
+}
+
+.lh-portrait {
+  border-radius: calc(var(--lh-radius-lg) - 6px);
+  aspect-ratio: 0.86;
+  object-fit: cover;
+  width: 100%;
+  display: block;
+}
+
+/* Caption below portrait — artist role + location chips */
+.lh-hero-card-caption {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--lh-radius-sm);
+  background: rgba(244, 240, 232, 0.04);
+  border: 1px solid var(--lh-line);
+}
+
+.lh-hero-card-caption .lh-meta-row { margin-bottom: 0; }
+
+.lh-rich-text h1 {
+  margin: 12px 0 24px;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 100px);
+  line-height: 0.92;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.lh-rich-text p {
+  color: rgba(244, 240, 232, 0.82);
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.65;
+  margin-bottom: 1.2em;
+}
+
+.lh-list {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  margin: 28px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--lh-line);
+}
+
+.lh-list li {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 18px;
+  padding-block: 18px;
+  border-bottom: 1px solid var(--lh-line);
+}
+
+.lh-list strong {
+  color: var(--lh-text);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.lh-list span {
+  color: var(--lh-muted);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* ── 15. CTA BLOCK ────────────────────────────────────
+   Cyan gradient wash, dark panel base.
+   Newake headline reads like a cinematic title card.   */
+.lh-cta,
+.lh-footer-cta {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--lh-radius-lg);
+  padding: clamp(40px, 6vw, 80px) clamp(32px, 6vw, 96px);
+  background:
+    linear-gradient(135deg, rgba(0, 240, 255, 0.08), transparent 40%),
+    var(--lh-panel);
+  border: 1px solid var(--lh-line);
+}
+
+
+
+#lh-particle-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+
+.lh-cta h2,
+.lh-footer-cta h2 {
+  max-width: 980px;
+  margin: 0 0 clamp(20px, 3vw, 36px);
+  font-family: var(--font-display);
+  font-size: clamp(48px, 8vw, 140px);
+  line-height: 0.94;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lh-text);
+}
+
+.lh-cta p {
+  color: var(--lh-muted);
+  font-size: 17px;
+  max-width: 600px;
+  line-height: 1.65;
+  margin: 0 0 32px;
+}
+
+/* ── 16. FOOTER ───────────────────────────────────────*/
+.lh-footer {
+  padding-block: 32px;
+  color: var(--lh-muted);
+  border-top: 1px solid var(--lh-line);
+}
+
+.lh-footer-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.lh-socials {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.lh-socials a {
+  color: var(--lh-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  transition: color var(--lh-dur-fast) var(--lh-ease);
+}
+
+.lh-socials a:hover { color: var(--lh-text); }
+
+/* ── 17. SCROLL REVEAL ────────────────────────────────
+   Lightweight fade-up — activated by JS adding .is-visible.
+   Respects reduced motion via override below.             */
+@keyframes lh-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lh-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--lh-dur-base) var(--lh-ease),
+    transform var(--lh-dur-base) var(--lh-ease);
+}
+
+.lh-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delay utilities */
+.lh-reveal-d1 { transition-delay: 0.08s; }
+.lh-reveal-d2 { transition-delay: 0.16s; }
+.lh-reveal-d3 { transition-delay: 0.24s; }
+
+/* ── HEADING LINE REVEAL EFFECT ──────────────────────── */
+.lh-line-reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.lh-reveal-line {
+  display: block;
+  width: max-content;
+  overflow: hidden;
+  margin-bottom: -0.15em;
+  padding-bottom: 0.15em;
+  padding-inline: 0.08em;
+  margin-inline: -0.08em;
+  vertical-align: bottom;
+}
+
+.lh-reveal-line-inner {
+  display: block;
+  transform: translateY(140%);
+  transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.lh-line-reveal.is-visible .lh-reveal-line-inner {
+  transform: translateY(0);
+}
+
+.lh-line-reveal.no-transition .lh-reveal-line-inner {
+  transition: none !important;
+}
+
+/* ── PROJECT DETAIL PAGE ──────────────────────────────*/
+.lh-detail-hero {
+  padding-block: clamp(72px, 10vw, 140px) clamp(40px, 5vw, 72px);
+}
+
+.lh-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lh-space-5);
+  margin-bottom: var(--lh-space-6);
+}
+
+.lh-detail-title {
+  margin: 0 0 clamp(20px, 3vw, 36px);
+  font-family: var(--font-display);
+  font-size: clamp(48px, 9vw, 140px);
+  line-height: 0.94;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lh-detail-lead {
+  max-width: 680px;
+  color: rgba(244, 240, 232, 0.82);
+  font-size: var(--type-lead-size);
+  line-height: var(--type-lead-lh);
+  letter-spacing: var(--type-lead-track);
+}
+
+.lh-detail-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--lh-radius-lg);
+  background: var(--lh-panel);
+  margin-block: clamp(32px, 5vw, 72px);
+}
+
+.lh-detail-body {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 680px);
+  gap: clamp(36px, 6vw, 96px);
+  align-items: start;
+}
+
+.lh-detail-sidebar {
+  position: sticky;
+  top: 90px;
+}
+
+.lh-detail-info-row {
+  padding-block: var(--lh-space-5);
+  border-bottom: 1px solid var(--lh-line);
+}
+
+.lh-detail-info-label {
+  color: var(--lh-accent);
+  font-size: var(--type-meta-size);
+  font-weight: var(--type-meta-weight);
+  letter-spacing: var(--type-meta-track);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.lh-detail-info-value {
+  color: var(--lh-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.lh-detail-content p {
+  color: rgba(244, 240, 232, 0.82);
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.7;
+  margin-bottom: 1.4em;
+}
+
+.lh-detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 24px);
+  margin-block: clamp(32px, 5vw, 64px);
+}
+
+.lh-detail-gallery-item {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--lh-radius-md);
+  background: var(--lh-panel);
+  width: 100%;
+}
+
+.lh-project-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--lh-line);
+  border-top: 1px solid var(--lh-line);
+  border-bottom: 1px solid var(--lh-line);
+  margin-block: clamp(48px, 7vw, 96px);
+}
+
+.lh-project-nav-item {
+  padding: clamp(24px, 4vw, 48px);
+  background: var(--lh-bg);
+  transition: background var(--lh-dur-fast) var(--lh-ease);
+}
+
+.lh-project-nav-item:hover { background: var(--lh-panel); }
+
+.lh-project-nav-label {
+  color: var(--lh-accent);
+  font-size: var(--type-meta-size);
+  font-weight: var(--type-meta-weight);
+  letter-spacing: var(--type-meta-track);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.lh-project-nav-title {
+  font-family: var(--font-display-alt);
+  font-size: clamp(18px, 2vw, 28px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--lh-text);
+}
+
+/* ── 18. RESPONSIVE ───────────────────────────────────*/
+@media (max-width: 1024px) {
+  .lh-section-head { grid-template-columns: 1fr; }
+  .lh-work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .lh-service-grid,
+  .lh-capabilities { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .lh-about-grid { grid-template-columns: 1fr; }
+  .lh-portrait-panel { position: static; max-width: 480px; }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --lh-gutter: 20px;
+    --lh-section-y: 72px;
+  }
+
+  .lh-nav { min-height: 64px; }
+
+  .lh-mobile-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    color: var(--lh-text);
+    border: 1px solid var(--lh-line);
+    border-radius: var(--lh-pill);
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+
+  .lh-menu {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 68px;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 16px;
+    border-radius: var(--lh-radius-md);
+    background: rgba(7, 7, 7, 0.97);
+    border: 1px solid var(--lh-line);
+  }
+
+  .lh-menu.is-open { display: flex; }
+  .lh-nav-cta { display: none; }
+
+  .lh-hero {
+    min-height: 80vh;
+    padding-block: 96px 48px;
+  }
+
+  .lh-hero-title {
+    font-size: clamp(52px, 17vw, 86px);
+    letter-spacing: 0.04em;
+  }
+
+  .lh-hero-copy { font-size: 18px; }
+
+  .lh-work-grid { grid-template-columns: 1fr; }
+  .lh-work-media { aspect-ratio: 16 / 11; }
+
+  .lh-service-grid,
+  .lh-capabilities { grid-template-columns: 1fr; }
+
+  .lh-service-card,
+  .lh-capability-card { min-height: 180px; }
+
+  .lh-cta,
+  .lh-footer-cta { padding: 32px; }
+
+  .lh-list li { grid-template-columns: 1fr; gap: 4px; }
+  .lh-detail-body { grid-template-columns: 1fr; }
+  .lh-detail-sidebar { position: static; }
+  .lh-detail-gallery { grid-template-columns: 1fr; }
+  .lh-project-nav { grid-template-columns: 1fr; }
+}
+
+/* ── 19. REDUCED MOTION ───────────────────────────────*/
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+  .lh-reveal { opacity: 1; transform: none; }
+  .lh-reveal-line-inner { transform: none !important; transition: none !important; }
+}
+
+/* ── 20. CUSTOM CURSOR ────────────────────────────────*/
+.lh-has-custom-cursor,
+.lh-has-custom-cursor * {
+  cursor: none !important;
+}
+
+.lh-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--lh-dur-fast) var(--lh-ease);
+}
+
+.lh-cursor.lh-cursor--active {
+  opacity: 1;
+}
+
+.lh-cursor-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: var(--lh-accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+  transition: 
+    width var(--lh-dur-fast) var(--lh-ease),
+    height var(--lh-dur-fast) var(--lh-ease),
+    background-color var(--lh-dur-fast) var(--lh-ease),
+    opacity var(--lh-dur-fast) var(--lh-ease);
+}
+
+.lh-cursor-ring {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(244, 240, 232, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 
+    width var(--lh-dur-base) var(--lh-ease),
+    height var(--lh-dur-base) var(--lh-ease),
+    border-color var(--lh-dur-base) var(--lh-ease),
+    background-color var(--lh-dur-base) var(--lh-ease);
+}
+
+/* Outer text content inside the ring */
+.lh-cursor-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--lh-on-accent);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: 
+    opacity var(--lh-dur-fast) var(--lh-ease),
+    transform var(--lh-dur-fast) var(--lh-ease);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Hovering interactive elements (links, buttons, filter pills) */
+.lh-cursor--hovering-link .lh-cursor-ring {
+  width: 52px;
+  height: 52px;
+  border-color: var(--lh-accent);
+  background-color: rgba(0, 240, 255, 0.05);
+}
+
+.lh-cursor--hovering-link .lh-cursor-dot {
+  width: 4px;
+  height: 4px;
+  background-color: var(--lh-text);
+}
+
+/* Hovering project/work cards */
+.lh-cursor--hovering-card .lh-cursor-ring {
+  width: 76px;
+  height: 76px;
+  border-color: var(--lh-accent);
+  background-color: var(--lh-accent);
+}
+
+.lh-cursor--hovering-card .lh-cursor-dot {
+  opacity: 0;
+}
+
+.lh-cursor--hovering-card .lh-cursor-text {
+  opacity: 1;
+  transform: scale(1);
+}
+

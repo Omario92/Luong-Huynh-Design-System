@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- @dsCard group="Type" name="Font stack" subtitle="Newake · Inter Tight · Inter · JetBrains Mono" viewport="700x340" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Font stack</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 22px 28px; display: grid; gap: 10px; }
+  .row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 18px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--lh-line);
+  }
+  .row:last-child { border: 0; }
+  .role {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-2);
+  }
+  .name { color: var(--fg-1); }
+  .newake {
+    font-family: "Newake", "Inter Tight", sans-serif;
+    font-size: 26px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    line-height: 1.04;
+  }
+  .inter-tight {
+    font-family: "Inter Tight", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+  .inter {
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+  }
+  .mono {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    letter-spacing: 0;
+  }
+  .note { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); margin-top: 4px; display: block; }
+</style>
+</head><body>
+<div class="card">
+  <div class="row">
+    <span class="role">Display</span>
+    <div>
+      <div class="name newake">Cinematic&nbsp;Display</div>
+      <span class="note">Newake · brand-owned · uppercase only · tracking +0.10–0.15em · hero / h1 / h2</span>
+    </div>
+  </div>
+  <div class="row">
+    <span class="role">Sub-display</span>
+    <div>
+      <div class="name inter-tight">Inter Tight — mixed-case headings</div>
+      <span class="note">Google Fonts · card titles · section titles · about sentence</span>
+    </div>
+  </div>
+  <div class="row">
+    <span class="role">Body</span>
+    <div>
+      <div class="name inter">Inter — reading copy and microcopy.</div>
+      <span class="note">Google Fonts · 400 / 500 / 600 / 700</span>
+    </div>
+  </div>
+  <div class="row">
+    <span class="role">Mono</span>
+    <div>
+      <div class="name mono">JetBrains Mono · 01 02 03 04</div>
+      <span class="note">Google Fonts · catalog numbers · captions</span>
+    </div>
+  </div>
+</div>
+</body></html>

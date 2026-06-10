@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Filter pills" subtitle="Portfolio category filter row" viewport="700x180" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Filter pills</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 28px 32px; display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid var(--lh-line); border-radius: 999px; color: var(--fg-2); background: transparent; font-size: 11px; letter-spacing: 0.11em; font-weight: 700; text-transform: uppercase; }
+  .pill.active { background: #00f0ff; color: #070707; border-color: #00f0ff; }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+</style>
+</head><body>
+<div class="card">
+  <span class="label">.lh-filter-row · portfolio category filter</span>
+  <div class="row">
+    <span class="pill active">All</span>
+    <span class="pill">CGI</span>
+    <span class="pill">3D Model</span>
+    <span class="pill">AI Generated</span>
+    <span class="pill">Key Visuals</span>
+    <span class="pill">TVC / Film</span>
+    <span class="pill">Branding</span>
+    <span class="pill">Web Design</span>
+  </div>
+</div>
+</body></html>

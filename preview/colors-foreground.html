@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- @dsCard group="Colors" name="Foreground & lines" subtitle="Ivory, muted ivory, hairline alphas" viewport="700x240" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Foreground & lines</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 24px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; align-items: stretch; }
+  .col { gap: 12px; display: flex; flex-direction: column; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--lh-line); background: #0e0e0e; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; }
+  .name { font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
+  .hex { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); }
+  .lines { display: flex; flex-direction: column; gap: 14px; padding: 18px; border: 1px solid var(--lh-line); border-radius: 12px; background: #0e0e0e; }
+  .lines .strip { height: 1px; background: rgba(244,240,232,0.14); }
+  .lines .strip.strong { background: rgba(244,240,232,0.28); }
+  .lines .tag { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); }
+</style>
+</head><body>
+<div class="card">
+  <div class="col">
+    <div class="row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="dot" style="background:#f4f0e8"></span>
+        <span class="name" style="color:#f4f0e8">Ivory · fg-1</span>
+      </div>
+      <span class="hex">#f4f0e8</span>
+    </div>
+    <div class="row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="dot" style="background:#9b978f"></span>
+        <span class="name" style="color:#9b978f">Muted · fg-2</span>
+      </div>
+      <span class="hex">#9b978f</span>
+    </div>
+    <div class="row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="dot" style="background:#070707;border:1px solid rgba(244,240,232,0.28)"></span>
+        <span class="name" style="color:#f4f0e8">On accent · fg</span>
+      </div>
+      <span class="hex">#070707</span>
+    </div>
+  </div>
+  <div class="lines">
+    <div class="tag">line · 14% alpha</div>
+    <div class="strip"></div>
+    <div class="tag">line-strong · 28%</div>
+    <div class="strip strong"></div>
+    <div class="tag">on hover the same hairline steps up — color never shifts</div>
+  </div>
+</div>
+</body></html>

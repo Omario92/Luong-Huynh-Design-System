@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- @dsCard group="Brand" name="Social icons" subtitle="Behance · Dribbble · Instagram · LinkedIn" viewport="700x200" -->
+<html lang="en"><head><meta charset="utf-8"/><title>Social</title>
+<link rel="stylesheet" href="_base.css"/>
+<style>
+  .card { padding: 28px 32px; display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; align-items: center; gap: 18px; }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+  .icon-row { display: flex; gap: 20px; align-items: center; padding: 18px 22px; border: 1px solid var(--lh-line); border-radius: 999px; width: fit-content; }
+  .icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; opacity: 0.85; }
+  .icon img { width: 22px; height: 22px; filter: brightness(0) invert(0.94) sepia(0.1); }
+</style>
+</head><body>
+<div class="card">
+  <span class="label">social row · all glyphs render in ivory, never in platform color</span>
+  <div class="row">
+    <div class="icon-row">
+      <span class="icon"><img src="https://cdn.simpleicons.org/behance/f4f0e8" alt="Behance"/></span>
+      <span class="icon"><img src="https://cdn.simpleicons.org/dribbble/f4f0e8" alt="Dribbble"/></span>
+      <span class="icon"><img src="https://cdn.simpleicons.org/instagram/f4f0e8" alt="Instagram"/></span>
+      <span class="icon"><img src="https://cdn.simpleicons.org/linkedin/f4f0e8" alt="LinkedIn"/></span>
+    </div>
+  </div>
+  <span class="label">hover: opacity 1 → 0.7 · or color → acid-lime</span>
+</div>
+</body></html>
