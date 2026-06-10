@@ -12,13 +12,15 @@
 <body>
 <div class="lh-page">
 
+<!-- ── HEADER ────────────────────────────────────────── -->
+<!-- lh-header start -->
 <header class="lh-header">
   <div class="lh-container lh-nav">
     <a class="lh-brand" href="index.html" aria-label="Luong Huynh homepage">
       <span class="lh-brand-mark">LH</span>
       <span>Luong Huynh</span>
     </a>
-    <button class="lh-mobile-toggle" type="button" data-menu-toggle aria-expanded="false">Menu</button>
+    <button class="lh-mobile-toggle" type="button" data-menu-toggle aria-expanded="false" aria-label="Toggle navigation menu">Menu</button>
     <nav class="lh-menu" data-menu aria-label="Main navigation">
       <a data-nav href="index.html">Homepage</a>
       <a data-nav href="portfolio.html">Portfolio</a>
@@ -27,10 +29,11 @@
     </nav>
   </div>
 </header>
-
+<!-- lh-header end -->
 
 <main>
   <!-- ── About Hero Section ── -->
+  <!-- lh-about-hero start -->
   <section class="lh-about-hero">
     <div class="lh-container">
       <div class="lh-about-hero-grid">
@@ -48,12 +51,15 @@
       </div>
     </div>
   </section>
+  <!-- lh-about-hero end -->
 
   <!-- ── Biography & Details Section ── -->
+  <!-- lh-about-biography start -->
   <section class="lh-section">
     <div class="lh-container lh-about-grid">
+      <!-- lh-portrait-panel start -->
       <aside class="lh-portrait-panel">
-        <img class="lh-portrait" src="assets/img/placeholders/stride-beyond.svg" alt="Luong Huynh portrait placeholder">
+        <img class="lh-portrait" src="assets/img/placeholders/stride-beyond.svg" alt="Luong Huynh portrait - Digital Artist specializing in 3D visuals, AI-generated art, and VFX">
         <div class="lh-hero-card-caption">
           <div class="lh-meta-row">
             <span class="lh-chip lh-chip-strong">Digital Artist</span>
@@ -61,12 +67,16 @@
           </div>
         </div>
       </aside>
+      <!-- lh-portrait-panel end -->
+
+      <!-- lh-personal-story start -->
       <div class="lh-rich-text">
         <h3 class="lh-about-sec-title">Personal Story</h3>
         <p class="lh-reveal">For over a decade, I have operated at the intersection where technical logic meets creative intuition. My journey began in the dark rooms of traditional post-production, mastering cinematic VFX, look development, and procedural 3D systems in Houdini. I spent years refining the physics of light, texture, and motion for commercial broadcast and print campaigns.</p>
         <p class="lh-reveal lh-reveal-d1">As the visual landscape shifted, I rebuilt my practice. Today, I blend traditional high-fidelity CGI with custom generative AI architectures. By scripting bespoke pipelines and design nodes in ComfyUI, I transform raw machine compute into precise, brand-safe art direction. This hybrid workflow enables rapid visual iteration without compromising campaign-grade finish.</p>
         <p class="lh-reveal lh-reveal-d2">Now based in Ho Chi Minh City, I collaborate with directors, creative agencies, and production studios globally. Whether architecting custom visual models, designing detailed product scenes, or compositing final key visuals, I build high-impact environments that feel immersive, cohesive, and cinematic.</p>
 
+        <!-- lh-highlights-list start -->
         <div class="lh-highlights-container lh-reveal lh-reveal-d3">
           <h4 class="lh-highlights-title">Selected Campaigns &amp; R&amp;D</h4>
           <div class="lh-highlights-list">
@@ -108,10 +118,15 @@
             </div>
           </div>
         </div>
+        <!-- lh-highlights-list end -->
       </div>
+      <!-- lh-personal-story end -->
     </div>
   </section>
+  <!-- lh-about-biography end -->
 
+  <!-- ── Practice & Capabilities Section ── -->
+  <!-- lh-practice-capabilities start -->
   <section class="lh-section lh-section-muted">
     <div class="lh-container">
       <div class="lh-section-head">
@@ -121,6 +136,7 @@
         </div>
         <p class="lh-section-copy lh-reveal lh-reveal-d1">Translating artistic vision and complex computational workflows into premium, production-ready key visuals for global brands.</p>
       </div>
+      <!-- lh-capabilities-grid start -->
       <div class="lh-capabilities-grid">
         <article class="lh-capability-card lh-reveal">
           <span class="lh-capability-num">01</span>
@@ -153,36 +169,43 @@
           <p class="lh-capability-copy">Delivering hero assets for global launches. Translating abstract concepts into scalable high-resolution print and digital key visuals.</p>
         </article>
       </div>
+      <!-- lh-capabilities-grid end -->
     </div>
   </section>
+  <!-- lh-practice-capabilities end -->
 
-  <section class="lh-section-tight" id="contact">
+  <!-- ── CONTACT CTA ──────────────────────────────────── -->
+  <!-- lh-cta start -->
+  <section class="lh-section" id="contact">
     <div class="lh-container">
       <div class="lh-cta">
-        <p class="lh-section-kicker">Contact</p>
-        <h2>Available for selected visual campaigns.</h2>
-        <p>For project inquiries, include objective, timeline, references, deliverables and usage channel.</p>
-        <div class="lh-hero-actions">
-          <a class="lh-button lh-button-primary" href="mailto:hello@luonghuynh.com">hello@luonghuynh.com</a>
-          <a class="lh-button" href="portfolio.html">View Work</a>
+        <p class="lh-section-kicker lh-reveal">Available for Work</p>
+        <h2 class="lh-reveal lh-reveal-d1">Available for selected visual campaigns.</h2>
+        <p class="lh-reveal lh-reveal-d2">For project inquiries, include your objective, timeline, deliverables, and channels. Let's shape the visual direction from concept to finished campaign asset.</p>
+        <div class="lh-hero-actions lh-reveal lh-reveal-d3">
+          <a class="lh-button lh-button-primary" href="mailto:hello@luonghuynh.com" aria-label="Send email to hello@luonghuynh.com">Get in Touch</a>
+          <a class="lh-button" href="portfolio.html" aria-label="View work archive">View Portfolio</a>
         </div>
       </div>
     </div>
   </section>
+  <!-- lh-cta end -->
 </main>
 
-
+<!-- ── FOOTER ────────────────────────────────────────── -->
+<!-- lh-footer start -->
 <footer class="lh-footer">
   <div class="lh-container lh-footer-grid">
     <div>© 2026 Luong Huynh. All rights reserved.</div>
     <div class="lh-socials" aria-label="Social links">
-      <a href="https://behance.com" target="_blank" rel="noreferrer">Behance</a>
-      <a href="https://dribbble.com" target="_blank" rel="noreferrer">Dribbble</a>
-      <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-      <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+      <a href="https://behance.com" target="_blank" rel="noreferrer" aria-label="Visit Luong Huynh's Behance profile">Behance</a>
+      <a href="https://dribbble.com" target="_blank" rel="noreferrer" aria-label="Visit Luong Huynh's Dribbble profile">Dribbble</a>
+      <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Visit Luong Huynh's Instagram profile">Instagram</a>
+      <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="Visit Luong Huynh's LinkedIn profile">LinkedIn</a>
     </div>
   </div>
 </footer>
+<!-- lh-footer end -->
 
 </div>
 <script src="assets/js/main.js"></script>
