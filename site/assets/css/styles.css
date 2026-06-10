@@ -1322,8 +1322,8 @@ button, input, textarea { font: inherit; }
   overflow: hidden;
   margin-bottom: -0.15em;
   padding-bottom: 0.15em;
-  padding-inline: 0.08em;
-  margin-inline: -0.08em;
+  padding-inline: 0.25em; /* generous horizontal padding to prevent glyph clipping */
+  margin-inline: -0.25em; /* offset matching padding to keep alignments perfect */
   vertical-align: bottom;
 }
 
