@@ -1016,6 +1016,85 @@ button, input, textarea { font: inherit; }
   font-size: 15px;
 }
 
+/* ── SELECTED HIGHLIGHTS LIST ───────────────────────── */
+.lh-highlights-container {
+  margin-top: 48px;
+  border-top: 1px solid var(--lh-line);
+  padding-top: 32px;
+}
+
+.lh-highlights-title {
+  font-family: var(--font-display-alt);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--lh-text);
+  margin: 0 0 24px;
+  text-transform: none;
+}
+
+.lh-highlights-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.lh-highlight-item {
+  display: grid;
+  grid-template-columns: 60px 120px 1fr 180px;
+  gap: 16px;
+  padding-block: 14px;
+  border-bottom: 1px solid var(--lh-line);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--lh-muted);
+  transition: color var(--lh-dur-fast) var(--lh-ease), border-color var(--lh-dur-fast) var(--lh-ease);
+}
+
+.lh-highlight-item:hover {
+  color: var(--lh-text);
+  border-bottom-color: var(--lh-line-strong);
+}
+
+.lh-hl-year {
+  color: var(--lh-soft);
+}
+
+.lh-hl-client {
+  font-weight: 500;
+}
+
+.lh-hl-project {
+  color: var(--lh-text);
+}
+
+.lh-hl-role {
+  text-align: right;
+  color: var(--lh-soft);
+}
+
+@media (max-width: 767px) {
+  .lh-highlight-item {
+    grid-template-columns: 50px 1fr;
+    gap: 4px 12px;
+    padding-block: 16px;
+  }
+  .lh-hl-year {
+    grid-row: span 2;
+    align-self: start;
+  }
+  .lh-hl-client {
+    grid-column: 2;
+  }
+  .lh-hl-project {
+    grid-column: 2;
+  }
+  .lh-hl-role {
+    grid-column: 2;
+    text-align: left;
+  }
+}
+
 /* ── ABOUT CAPABILITIES GRID ────────────────────────── */
 .lh-capabilities-grid {
   display: grid;
