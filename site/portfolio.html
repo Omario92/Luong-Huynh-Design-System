@@ -913,7 +913,7 @@
       if (!noResults.hidden && noResultsCopy && activeList().length) {
         var names = activeList().map(function (f) { return labels[f] || f; }).join(', ');
         noResultsCopy.textContent =
-          'No projects match ' + names + '. Try another combination, or reset the archive to view the full body of work.';
+          'No projects match ' + names + '. Try selecting another category, or reset the archive to view the full body of work.';
       }
     }
     syncButtons(visible);
@@ -938,10 +938,13 @@
 
   function setActive(tokens) {
     active = {};
-    tokens.forEach(function (t) {
-      t = (t || '').trim().toLowerCase();
-      if (t && t !== 'all' && labels.hasOwnProperty(t)) active[t] = true;
-    });
+    for (var i = 0; i < tokens.length; i++) {
+      var t = (tokens[i] || '').trim().toLowerCase();
+      if (t && t !== 'all' && labels.hasOwnProperty(t)) {
+        active[t] = true;
+        break; // enforce single selection even on URL hash load
+      }
+    }
   }
 
   // --- interactions ---
@@ -950,9 +953,15 @@
     if (btn !== allBtn) btn.setAttribute('aria-pressed', 'false');
     btn.addEventListener('click', function () {
       var f = btn.dataset.filter;
-      if (f === 'all') active = {};
-      else if (active[f]) delete active[f];
-      else active[f] = true;
+      if (f === 'all') {
+        active = {};
+      } else {
+        var wasActive = !!active[f];
+        active = {}; // clear all existing filters
+        if (!wasActive) {
+          active[f] = true;
+        }
+      }
       render(true);
       syncHash();
     });
