@@ -1016,6 +1016,114 @@ button, input, textarea { font: inherit; }
   font-size: 15px;
 }
 
+/* ── ABOUT CAPABILITIES GRID ────────────────────────── */
+.lh-capabilities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--lh-line);
+  border-radius: var(--lh-radius-lg);
+  overflow: hidden;
+  background: var(--lh-line);
+}
+
+.lh-capability-card {
+  position: relative;
+  min-height: 280px;
+  padding: clamp(24px, 3vw, 44px);
+  background: var(--lh-bg-soft);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition: 
+    transform var(--lh-dur-base) var(--lh-ease),
+    background var(--lh-dur-base) var(--lh-ease);
+}
+
+/* Very thin lime accent line at the bottom on hover */
+.lh-capability-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #d7ff3f; /* acid lime */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--lh-dur-base) var(--lh-ease);
+}
+
+.lh-capability-card:hover {
+  transform: translateY(-4px);
+  background: var(--lh-panel);
+  z-index: 2; /* Lift card above grid hairline */
+}
+
+.lh-capability-card:hover::after {
+  transform: scaleX(1);
+}
+
+.lh-capability-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--lh-muted);
+  margin-bottom: 20px;
+}
+
+.lh-capability-eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lh-soft); /* restrained gray-ivory */
+  margin-bottom: 8px;
+}
+
+.lh-capability-title {
+  font-family: var(--font-display-alt);
+  font-size: clamp(20px, 1.8vw, 28px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--lh-text);
+  margin: 0 0 16px;
+  text-transform: none;
+}
+
+.lh-capability-copy {
+  color: var(--lh-muted);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+@media (min-width: 1025px) {
+  .lh-span-2 {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 1024px) {
+  .lh-capabilities-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lh-span-2 {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .lh-capabilities-grid {
+    grid-template-columns: 1fr;
+  }
+  .lh-capability-card {
+    min-height: auto;
+    padding: 24px;
+  }
+}
+
 /* ── 15. CTA BLOCK ────────────────────────────────────
    Cyan gradient wash, dark panel base.
    Newake headline reads like a cinematic title card.   */
