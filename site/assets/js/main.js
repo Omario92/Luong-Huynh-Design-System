@@ -703,9 +703,134 @@
     });
   }
 
+  // --- Autoplay card videos on hover ---
+  function initCardHoverVideos() {
+    const cards = document.querySelectorAll('.lh-work-card');
+    cards.forEach(card => {
+      const video = card.querySelector('.lh-work-media video');
+      if (!video) return;
+
+      // Ambient loops (autoplay attribute) are the card's only media — they
+      // are not part of the hover dissolve. Drive them by viewport instead:
+      // recovers from autoplay being blocked in background tabs, and stops
+      // offscreen playback.
+      if (video.hasAttribute('autoplay')) {
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(entries => {
+            entries.forEach(e => {
+              if (e.isIntersecting) video.play().catch(() => {});
+              else video.pause();
+            });
+          }, { threshold: 0.1 }).observe(video);
+        }
+        return;
+      }
+
+      // Start video paused by default, since we control it via hover JS
+      video.pause();
+
+      let leaveTimeout = null;
+      let isHovering = false;
+
+      // The CSS dissolve is gated on .is-video-playing: only swap the still
+      // for the video once it really has frames, so preload="none" buffering
+      // never flashes black under the thumbnail.
+      video.addEventListener('playing', () => {
+        if (isHovering) card.classList.add('is-video-playing');
+      });
+
+      card.addEventListener('mouseenter', () => {
+        isHovering = true;
+        if (leaveTimeout) {
+          clearTimeout(leaveTimeout);
+          leaveTimeout = null;
+        }
+        video.play().catch(err => {
+          console.warn('Card video play prevented:', err);
+        });
+      });
+
+      card.addEventListener('mouseleave', () => {
+        isHovering = false;
+        card.classList.remove('is-video-playing'); // dissolve back to the still
+        if (leaveTimeout) clearTimeout(leaveTimeout);
+        leaveTimeout = setTimeout(() => {
+          video.pause();
+          video.currentTime = 0;
+        }, 1150); // keep playing under the 1.1s dissolve back to the still
+      });
+    });
+  }
+
+  // --- Scroll Zoom Cover Video on Case Study page ---
+  function initScrollZoomVideo() {
+    const sections = document.querySelectorAll('.lh-scroll-zoom-section');
+    if (!sections.length) return;
+
+    function handleScroll() {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const scrollTop = window.scrollY || window.pageYOffset;
+
+      sections.forEach(section => {
+        const wrapper = section.querySelector('.lh-scroll-zoom-wrapper');
+        if (!wrapper) return;
+
+        const video = wrapper.querySelector('video');
+
+        // Disable scaling on mobile devices (width <= 768px)
+        if (viewportWidth <= 768) {
+          wrapper.style.width = '';
+          wrapper.style.borderRadius = 'var(--lh-radius-lg)';
+          if (video) video.style.transform = 'none';
+          return;
+        }
+
+        // Calculate position of the section relative to document
+        const rect = section.getBoundingClientRect();
+        const elementTop = rect.top + scrollTop;
+
+        const startScroll = elementTop - viewportHeight;
+        const endScroll = elementTop - 80; // Stop expanding when top reaches header sticky bar (80px)
+
+        let progress = (scrollTop - startScroll) / (endScroll - startScroll);
+        progress = Math.max(0, Math.min(1, progress));
+
+        // Calculate initial layout container width
+        const gutter = 24; // standard --lh-gutter is 24px
+        const maxContainer = 1440; // standard --lh-max is 1440px
+        const initialWidth = Math.min(viewportWidth - (gutter * 2), maxContainer);
+
+        // Wrapper expands horizontally, naturally pushing content below down without clipping
+        const currentWidth = initialWidth + progress * (viewportWidth - initialWidth);
+        const initialRadius = 16; // matching var(--lh-radius-lg) default of 16px
+        const currentRadius = (1 - progress) * initialRadius;
+
+        wrapper.style.width = `${currentWidth.toFixed(2)}px`;
+        wrapper.style.borderRadius = `${currentRadius.toFixed(2)}px`;
+
+        // Apply subtle 3D parallax zoom out on the video inside the wrapper
+        if (video) {
+          const videoScale = 1.15 - progress * 0.15; // Zoom out from 1.15x to 1x
+          video.style.transform = `translate3d(0px, 0px, 0px) scale(${videoScale.toFixed(5)})`;
+        }
+      });
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    handleScroll(); // Run initially
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCustomCursor);
+    document.addEventListener('DOMContentLoaded', () => {
+      initCustomCursor();
+      initCardHoverVideos();
+      initScrollZoomVideo();
+    });
   } else {
     initCustomCursor();
+    initCardHoverVideos();
+    initScrollZoomVideo();
   }
 })();

@@ -43,12 +43,14 @@
     </section>
 
   <!-- ── COVER VIDEO ─────────────────────────────────── -->
-  <div class="lh-container">
-    <video class="lh-detail-cover lh-reveal" autoplay loop muted playsinline controls aria-label="CGI Huda Football campaign loop render">
-      <source src="assets/video/2023/CGI Huda Football.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
+  <section class="lh-scroll-zoom-section">
+    <div class="lh-scroll-zoom-wrapper lh-reveal">
+      <video class="lh-detail-cover" autoplay loop muted playsinline controls aria-label="CGI Huda Football campaign loop render">
+        <source src="assets/video/2023/CGI Huda Football.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </section>
 
     <!-- ── DETAIL BODY ─────────────────────────────────── -->
     <section class="lh-section">
@@ -89,14 +91,12 @@
         </div>
 
         <!-- ── GALLERY (MIXED STILLS + LOOPS) ────────────── -->
-        <div class="lh-detail-gallery lh-reveal">
-          <img class="lh-detail-gallery-item" src="assets/img/placeholders/bt-studio-cgi-beverage-demo.svg" alt="Detail render 1">
-          <video class="lh-detail-gallery-item" autoplay loop muted playsinline controls aria-label="3D Wireframe Playblast (unrendered shading demo)">
+        <div class="lh-detail-gallery lh-reveal" style="grid-template-columns: 1fr; max-width: 960px; margin-inline: auto; text-align: center;">
+          <h3 style="font-family: var(--font-display-alt); font-size: clamp(20px, 3vw, 28px); margin-bottom: 24px; color: var(--lh-text); text-align: left;">3D Wireframe Playblast</h3>
+          <video class="lh-detail-gallery-item" autoplay loop muted playsinline controls aria-label="3D Wireframe Playblast (unrendered shading demo)" style="aspect-ratio: 16 / 9; max-width: 100%;">
             <source src="https://luonghuynh.com/wp-content/uploads/2024/11/Huda-Football-Demo.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
-          <img class="lh-detail-gallery-item" src="assets/img/placeholders/cheers-to-victory.svg" alt="Detail render 2">
-          <img class="lh-detail-gallery-item" src="assets/img/placeholders/huda-beach-carnival-2023.svg" alt="Detail render 3">
         </div>
 
       </div>
@@ -109,9 +109,9 @@
           <div class="lh-project-nav-label">← Previous</div>
           <div class="lh-project-nav-title">TVC Ovaltine 2015 Adaptation</div>
         </a>
-        <a class="lh-project-nav-item" href="stride-beyond.html" style="text-align: right;">
+        <a class="lh-project-nav-item" href="afc-key-visual.html" style="text-align: right;">
           <div class="lh-project-nav-label">Next →</div>
-          <div class="lh-project-nav-title">Stride Beyond</div>
+          <div class="lh-project-nav-title">AFC Key Visual</div>
         </a>
       </nav>
     </div>

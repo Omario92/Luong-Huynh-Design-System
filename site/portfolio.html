@@ -7,6 +7,11 @@
   <meta name="description" content="Portfolio of Luong Huynh — Digital Artist specializing in 3D visuals, AI-generated imagery and VFX.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Perf: fetch the font CSS in parallel with styles.css (its @import
+       would otherwise only be discovered after styles.css arrives), and
+       preload the Newake display face used by every headline. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="preload" href="assets/fonts/NewakeFont-Demo.otf" as="font" type="font/otf" crossorigin>
   <link rel="stylesheet" href="assets/css/styles.css">
 
   <!-- =====================================================
@@ -214,7 +219,11 @@
     .lh-work-media img,
     .lh-work-media video {
       transform: scale(1.001);
+      /* opacity included: this page-scoped rule overrides styles.css, and
+         dropping it is what makes the thumb->video swap cut instantly.
+         1.1s symmetric in-out = a film dissolve, not a UI toggle. */
       transition:
+        opacity   1.1s cubic-bezier(0.45, 0.05, 0.55, 0.95),
         transform var(--lh-dur-slow) var(--lh-ease),
         filter    var(--lh-dur-slow) var(--lh-ease);
       will-change: transform, filter;
@@ -382,8 +391,264 @@
       color: var(--lh-text);
     }
 
+    /* ── CINEMATIC REEL HERO ───────────────────────────────────────────────
+       Full-bleed muted reel behind a film-title-card composition.
+       Bottom-left aligned like the homepage hero; mono index strip on top,
+       Newake display title (picked up by main.js line-reveal), lead copy,
+       and a scroll cue. Letterboxed by a hairline + whisper of grain. ── */
+    .lh-pf-hero {
+      position: relative;
+      overflow: hidden;
+      min-height: clamp(520px, 78vh, 820px);
+      display: grid;
+      align-items: end;
+      border-bottom: 1px solid var(--lh-line);
+      background: var(--lh-bg-soft);
+    }
+
+    .lh-pf-hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.06) saturate(1.05);
+    }
+
+    /* scrim: readable title zone bottom-left, cinematic vignette elsewhere */
+    .lh-pf-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        linear-gradient(to top, rgba(7, 7, 7, 0.92) 0%, rgba(7, 7, 7, 0.45) 38%, rgba(7, 7, 7, 0.12) 62%, rgba(7, 7, 7, 0.35) 100%),
+        radial-gradient(ellipse 120% 90% at 18% 88%, rgba(7, 7, 7, 0.55), transparent 55%);
+    }
+
+    /* film grain over the reel — always on, very light */
+    .lh-pf-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+      mix-blend-mode: soft-light;
+      opacity: 0.12;
+    }
+
+    .lh-pf-hero-content {
+      position: relative;
+      z-index: 4;
+      padding-block: clamp(96px, 13vw, 170px) clamp(40px, 5vw, 64px);
+    }
+
+    /* mono index strip — "slate" line above the title */
+    .lh-pf-hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      margin: 0 0 clamp(18px, 2.4vw, 28px);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lh-muted);
+    }
+    .lh-pf-hero-meta b {
+      color: var(--lh-text);
+      font-weight: 500;
+    }
+    .lh-pf-hero-meta .lh-pf-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--lh-accent);
+      box-shadow: 0 0 8px var(--lh-accent);
+      flex-shrink: 0;
+    }
+
+    .lh-pf-hero-title {
+      margin: 0 0 clamp(16px, 2.4vw, 28px);
+      font-size: clamp(52px, 9vw, 150px);
+      line-height: 0.92;
+      letter-spacing: 0.10em;
+      max-width: 12ch;
+    }
+
+    .lh-pf-hero-copy {
+      margin: 0;
+      max-width: 56ch;
+      color: rgba(244, 240, 232, 0.82);
+      font-size: clamp(16px, 1.5vw, 20px);
+      line-height: 1.55;
+      letter-spacing: -0.01em;
+    }
+
+    /* scroll cue — mono label + descending accent line, pinned bottom-right */
+    .lh-pf-hero-scroll {
+      position: absolute;
+      right: var(--lh-gutter);
+      bottom: clamp(40px, 5vw, 64px);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--lh-soft);
+      writing-mode: vertical-rl;
+    }
+    .lh-pf-hero-scroll::after {
+      content: "";
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, var(--lh-accent), transparent);
+      animation: lh-pf-scroll-drift 2.2s var(--lh-ease) infinite;
+    }
+    @keyframes lh-pf-scroll-drift {
+      0%   { transform: translateY(0);    opacity: 1; }
+      70%  { transform: translateY(14px); opacity: 0.2; }
+      100% { transform: translateY(14px); opacity: 0; }
+    }
+
+    @media (max-width: 767px) {
+      .lh-pf-hero { min-height: 70vh; }
+      .lh-pf-hero-title { letter-spacing: 0.05em; }
+      .lh-pf-hero-scroll { display: none; }
+    }
+
+    /* slim archive head above the filter bar (replaces the old section-head) */
+    .lh-pf-archive-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: clamp(20px, 3vw, 32px);
+    }
+    .lh-pf-archive-head .lh-section-kicker { margin: 0; }
+    .lh-pf-archive-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lh-soft);
+    }
+
+    /* ── EDITORIAL CARD ANATOMY ──────────────────────────────────────────────
+       Archive index (top-right) + category tag chips (top-left) injected on
+       the media by the page script — progressive enhancement, decorative
+       only (aria-hidden), so no-JS keeps cards fully usable. ── */
+    .lh-work-media .lh-work-tags {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .lh-work-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 4px 9px;
+      border: 1px solid rgba(244, 240, 232, 0.16);
+      border-radius: var(--lh-pill);
+      background: rgba(7, 7, 7, 0.55);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(244, 240, 232, 0.78);
+      line-height: 1;
+      transition:
+        border-color var(--lh-dur-base) var(--lh-ease),
+        color        var(--lh-dur-base) var(--lh-ease);
+    }
+    .lh-work-card:hover .lh-work-tag {
+      color: var(--lh-text);
+      border-color: color-mix(in srgb, var(--lh-accent) 45%, transparent);
+    }
+    .lh-work-index {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 5;
+      pointer-events: none;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: rgba(244, 240, 232, 0.66);
+      text-shadow: 0 1px 8px rgba(7, 7, 7, 0.8);
+      transition: color var(--lh-dur-base) var(--lh-ease);
+    }
+    .lh-work-card:hover .lh-work-index { color: var(--lh-accent); }
+
+    /* ── FILM-POSTER LAYOUT — feature & wide cards (desktop only) ────────────
+       Media fills the whole card; the body floats over its lower third on a
+       scrim gradient, and the title switches to Newake display — a one-sheet
+       rather than a stacked tile. Below 1025px cards return to the stacked
+       layout, so nothing crams on tablet/mobile. ── */
+    @media (min-width: 1025px) {
+      .lh-work-card[data-size="feature"] > a,
+      .lh-work-card[data-size="wide"]    > a { position: relative; }
+
+      .lh-work-card[data-size="feature"] .lh-work-media,
+      .lh-work-card[data-size="wide"]    .lh-work-media {
+        position: absolute;
+        inset: 0;
+        border-radius: calc(var(--lh-radius-lg) - 1px);
+      }
+
+      .lh-work-card[data-size="feature"] .lh-work-body,
+      .lh-work-card[data-size="wide"]    .lh-work-body {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 6;
+        background: linear-gradient(to top, rgba(7, 7, 7, 0.92) 0%, rgba(7, 7, 7, 0.55) 55%, transparent 100%);
+        box-shadow: none;
+      }
+      .lh-work-card[data-size="feature"] .lh-work-body::before,
+      .lh-work-card[data-size="wide"]    .lh-work-body::before { display: none; }
+
+      .lh-work-card[data-size="feature"] .lh-work-title,
+      .lh-work-card[data-size="wide"]    .lh-work-title {
+        font-family: var(--font-display);
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        line-height: 0.94;
+      }
+      .lh-work-card[data-size="feature"] .lh-work-title {
+        font-size: clamp(32px, 3vw, 52px);
+      }
+
+      .lh-work-card[data-size="feature"] .lh-work-desc,
+      .lh-work-card[data-size="wide"]    .lh-work-desc {
+        max-width: 52ch;
+        color: rgba(244, 240, 232, 0.78);
+      }
+    }
+
     /* Respect reduced motion: kill grain + arrow drift, keep states legible */
     @media (prefers-reduced-motion: reduce) {
+      .lh-pf-hero-scroll::after { animation: none; }
       .lh-work-card > a.lh-stagger-in,
       .lh-work-card > a.lh-stagger-out { animation: none; }
       .lh-no-results { animation: none; }
@@ -414,14 +679,40 @@
 
 
 <main>
+
+  <!-- =====================================================
+       CINEMATIC REEL HERO
+       Full-bleed muted reel (swap the <source> for the
+       official showreel cut when ready) behind a film
+       title card. data-pf-hero-video is paused offscreen /
+       under prefers-reduced-motion by the page script.
+       ===================================================== -->
+  <section class="lh-pf-hero" aria-label="Portfolio showreel">
+    <video class="lh-pf-hero-video" data-pf-hero-video autoplay loop muted playsinline
+           preload="metadata"
+           poster="assets/img/2023/huda-football.jpg"
+           aria-hidden="true" tabindex="-1">
+      <source src="assets/video/2023/CGI Huda Football.mp4" type="video/mp4">
+    </video>
+    <div class="lh-container lh-pf-hero-content">
+      <p class="lh-pf-hero-meta">
+        <span class="lh-pf-dot" aria-hidden="true"></span>
+        <b>Portfolio Index</b>
+        <span>10 Projects</span>
+        <span>2015—2023</span>
+        <span>CGI · AI · TVC · Key Visual</span>
+      </p>
+      <h1 class="lh-section-title lh-pf-hero-title">Selected Works</h1>
+      <p class="lh-pf-hero-copy">A curated archive of campaign visuals, product renders, AI-generated imagery and visual direction — across CGI, key visuals, branding and film.</p>
+    </div>
+    <span class="lh-pf-hero-scroll" aria-hidden="true">Scroll</span>
+  </section>
+
   <section class="lh-section">
     <div class="lh-container">
-      <div class="lh-section-head">
-        <div>
-          <p class="lh-section-kicker">Portfolio</p>
-          <h1 class="lh-section-title">A curated archive of 3D, AI, CGI, TVC and brand visuals.</h1>
-        </div>
-        <p class="lh-section-copy">An archive of campaign visuals, product renders, AI-generated imagery and visual direction work — across CGI, key visuals, branding and film.</p>
+      <div class="lh-pf-archive-head">
+        <p class="lh-section-kicker">The Archive</p>
+        <span class="lh-pf-archive-count">Index 01 — 10</span>
       </div>
       <div class="lh-filter-bar" aria-label="Portfolio filters">
         <button class="lh-filter-btn is-active" data-filter="all">All</button>
@@ -440,7 +731,7 @@
 
         <article class="lh-work-card" data-categories="tvc">
           <a href="tvc-ovaltine-2015-adaptation.html" aria-label="Open TVC Ovaltine 2015 Adaptation case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/tvc-ovaltine-2015-adaptation.svg" alt="TVC Ovaltine 2015 Adaptation"></div>
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="https://luonghuynh.com/wp-content/uploads/2024/11/Ovaltine2015-1.jpg" alt="TVC Ovaltine 2015 Adaptation"></div>
             <div class="lh-work-body">
               <h3 class="lh-work-title">TVC Ovaltine 2015 Adaptation</h3>
               <p class="lh-work-desc">Campaign adaptation with cinematic product treatment.</p>
@@ -466,7 +757,7 @@
         <article class="lh-work-card" data-size="feature" data-categories="cgi feature">
           <a href="bt-studio-cgi-huda-football.html" aria-label="Open BT Studio – CGI Huda Football case study">
             <div class="lh-work-media">
-              <video autoplay loop muted playsinline aria-label="CGI Huda Football video loop">
+              <video autoplay loop muted playsinline preload="metadata" aria-label="CGI Huda Football video loop">
                 <source src="assets/video/2023/CGI Huda Football.mp4" type="video/mp4">
               </video>
             </div>
@@ -492,59 +783,9 @@
           </a>
         </article>
 
-        <article class="lh-work-card" data-size="tall" data-categories="ai branding">
-          <a href="stride-beyond.html" aria-label="Open Stride Beyond case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/stride-beyond.svg" alt="Stride Beyond"></div>
-            <div class="lh-work-body">
-              <h3 class="lh-work-title">Stride Beyond</h3>
-              <p class="lh-work-desc">AI-led identity exploration for a futuristic visual language.</p>
-              <div class="lh-work-meta-grid">
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Role</span>
-                  <span class="lh-work-meta-value">AI Art & Concept</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Client</span>
-                  <span class="lh-work-meta-value">Personal Concept</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2026</span>
-                </div>
-              </div>
-              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
-            </div>
-          </a>
-        </article>
-
-        <article class="lh-work-card" data-categories="3d ai">
-          <a href="cheers-to-victory.html" aria-label="Open Cheers to Victory case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/cheers-to-victory.svg" alt="Cheers to Victory"></div>
-            <div class="lh-work-body">
-              <h3 class="lh-work-title">Cheers to Victory</h3>
-              <p class="lh-work-desc">Victory-themed 3D/AI visual with energetic beer celebration mood.</p>
-              <div class="lh-work-meta-grid">
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Role</span>
-                  <span class="lh-work-meta-value">3D Model & AI</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Client</span>
-                  <span class="lh-work-meta-value">Personal Concept</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2025</span>
-                </div>
-              </div>
-              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
-            </div>
-          </a>
-        </article>
-
         <article class="lh-work-card" data-categories="3d keyvisual">
           <a href="afc-key-visual.html" aria-label="Open AFC Key Visual case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/afc-key-visual.svg" alt="AFC Key Visual"></div>
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="assets/img/2020/AFC/AFC_thumb.webp" alt="AFC Key Visual"></div>
             <div class="lh-work-body">
               <h3 class="lh-work-title">AFC Key Visual</h3>
               <p class="lh-work-desc">High-impact sports key visual direction and product composition.</p>
@@ -559,7 +800,7 @@
                 </div>
                 <div class="lh-work-meta-item">
                   <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2024</span>
+                  <span class="lh-work-meta-value">2020</span>
                 </div>
               </div>
               <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
@@ -569,7 +810,7 @@
 
         <article class="lh-work-card" data-categories="3d keyvisual">
           <a href="twister-pack-visual.html" aria-label="Open Twister Pack Visual case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/twister-pack-visual.svg" alt="Twister Pack Visual"></div>
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="https://luonghuynh.com/wp-content/uploads/2024/09/Twister_thumb.jpg" alt="Twister Pack Visual"></div>
             <div class="lh-work-body">
               <h3 class="lh-work-title">Twister Pack Visual</h3>
               <p class="lh-work-desc">Pack-focused 3D visual built for retail and campaign usage.</p>
@@ -592,9 +833,9 @@
           </a>
         </article>
 
-        <article class="lh-work-card" data-categories="3d keyvisual">
+        <article class="lh-work-card" data-size="tall" data-categories="3d keyvisual">
           <a href="halida-tet-2022-key-visual.html" aria-label="Open Halida Tet 2022 Key Visual case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/halida-tet-2022-key-visual.svg" alt="Halida Tet 2022 Key Visual"></div>
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="https://luonghuynh.com/wp-content/uploads/2024/09/Halida_Final.png" alt="Halida Tet 2022 Key Visual"></div>
             <div class="lh-work-body">
               <h3 class="lh-work-title">Halida Tet 2022 Key Visual</h3>
               <p class="lh-work-desc">Seasonal Tet composition combining beer product and festive energy.</p>
@@ -617,134 +858,14 @@
           </a>
         </article>
 
-        <article class="lh-work-card" data-categories="3d keyvisual">
-          <a href="huda-beach-carnival-2023.html" aria-label="Open Huda Beach Carnival 2023 case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/huda-beach-carnival-2023.svg" alt="Huda Beach Carnival 2023"></div>
-            <div class="lh-work-body">
-              <h3 class="lh-work-title">Huda Beach Carnival 2023</h3>
-              <p class="lh-work-desc">Event visual with beach, summer, and brand-world atmosphere.</p>
-              <div class="lh-work-meta-grid">
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Role</span>
-                  <span class="lh-work-meta-value">3D Environment</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Client</span>
-                  <span class="lh-work-meta-value">Huda Beer</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2023</span>
-                </div>
-              </div>
-              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
-            </div>
-          </a>
-        </article>
-
-        <article class="lh-work-card" data-categories="web">
-          <a href="circuit.html" aria-label="Open Circuit case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/circuit.svg" alt="Circuit"></div>
-            <div class="lh-work-body">
-              <h3 class="lh-work-title">Circuit</h3>
-              <p class="lh-work-desc">Visual interface direction for a modern digital product concept.</p>
-              <div class="lh-work-meta-grid">
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Role</span>
-                  <span class="lh-work-meta-value">UI/UX Direction</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Client</span>
-                  <span class="lh-work-meta-value">Personal Concept</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2025</span>
-                </div>
-              </div>
-              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
-            </div>
-          </a>
-        </article>
-
-        <article class="lh-work-card" data-categories="web">
-          <a href="spectral.html" aria-label="Open Spectral case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/spectral.svg" alt="Spectral"></div>
-            <div class="lh-work-body">
-              <h3 class="lh-work-title">Spectral</h3>
-              <p class="lh-work-desc">Editorial web concept with atmospheric motion and dark UI styling.</p>
-              <div class="lh-work-meta-grid">
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Role</span>
-                  <span class="lh-work-meta-value">Front-end & UI Art</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Client</span>
-                  <span class="lh-work-meta-value">Concept Studio</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2026</span>
-                </div>
-              </div>
-              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
-            </div>
-          </a>
-        </article>
-
-        <article class="lh-work-card" data-categories="branding">
-          <a href="nexora.html" aria-label="Open Nexora case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/nexora.svg" alt="Nexora"></div>
-            <div class="lh-work-body">
-              <h3 class="lh-work-title">Nexora</h3>
-              <p class="lh-work-desc">Brand system exploration with premium futuristic identity cues.</p>
-              <div class="lh-work-meta-grid">
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Role</span>
-                  <span class="lh-work-meta-value">Branding & Type</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Client</span>
-                  <span class="lh-work-meta-value">Nexora Corp</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2025</span>
-                </div>
-              </div>
-              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
-            </div>
-          </a>
-        </article>
-
-        <article class="lh-work-card" data-size="wide" data-categories="film">
-          <a href="astralis.html" aria-label="Open Astralis case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/astralis.svg" alt="Astralis"></div>
-            <div class="lh-work-body">
-              <h3 class="lh-work-title">Astralis</h3>
-              <p class="lh-work-desc">Film-inspired visual direction with atmospheric narrative framing.</p>
-              <div class="lh-work-meta-grid">
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Role</span>
-                  <span class="lh-work-meta-value">Visual Direction</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Client</span>
-                  <span class="lh-work-meta-value">Film Studio</span>
-                </div>
-                <div class="lh-work-meta-item">
-                  <span class="lh-work-meta-label">Year</span>
-                  <span class="lh-work-meta-value">2024</span>
-                </div>
-              </div>
-              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
-            </div>
-          </a>
-        </article>
-
-        <article class="lh-work-card" data-categories="branding cgi">
+        <article class="lh-work-card" data-size="wide" data-categories="branding cgi">
           <a href="bt-studio-cgi-beverage-demo.html" aria-label="Open BT Studio – CGI Beverage Demo case study">
-            <div class="lh-work-media"><img src="assets/img/placeholders/bt-studio-cgi-beverage-demo.svg" alt="BT Studio – CGI Beverage Demo"></div>
+            <div class="lh-work-media">
+              <img loading="lazy" decoding="async" src="https://luonghuynh.com/wp-content/uploads/2024/05/BTS-SODA.mp4_snapshot_00.10.226.png" alt="BT Studio – CGI Beverage Demo">
+              <video loop muted playsinline preload="none" aria-label="BT Studio – CGI Beverage Demo video loop">
+                <source src="https://luonghuynh.com/wp-content/uploads/2024/05/BTS-SODA.mp4" type="video/mp4">
+              </video>
+            </div>
             <div class="lh-work-body">
               <h3 class="lh-work-title">BT Studio – CGI Beverage Demo</h3>
               <p class="lh-work-desc">Product-led CGI beverage demo with polished advertising finish.</p>
@@ -760,6 +881,106 @@
                 <div class="lh-work-meta-item">
                   <span class="lh-work-meta-label">Year</span>
                   <span class="lh-work-meta-value">2023</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="3d cgi">
+          <a href="twister-milk-bottle.html" aria-label="Open Twister Milk Bottle case study">
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="assets/img/2020/Twister_Orange_FINAL_2904.webp" alt="Twister Milk Bottle"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Twister Milk Bottle</h3>
+              <p class="lh-work-desc">Photorealistic 3D product visualization and bottle render campaign.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Modeling & CGI</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Twister / PepsiCo</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2020</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="tvc cgi 3d">
+          <a href="tvc-hero-15s.html" aria-label="Open TVC HERO 15s case study">
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="assets/img/2020/HERO%20TVC/Hero%20TVC%2015s-thumb.webp" alt="TVC HERO 15s"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">TVC HERO 15s</h3>
+              <p class="lh-work-desc">High-energy commercial featuring dynamic CGI character modeling and packaging animation.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Anim & VFX</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Hero Brand</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2020</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="cgi tvc">
+          <a href="huda-csr.html" aria-label="Open Huda CSR case study">
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="assets/img/2021/HUDA_CSR/Huda_CSR_thumb.webp" alt="Huda CSR"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Huda CSR</h3>
+              <p class="lh-work-desc">CGI visual campaign and video production for Huda Beer's community initiatives.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">CGI & Video Production</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Huda Beer</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2021</span>
+                </div>
+              </div>
+              <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lh-work-card" data-categories="3d cgi keyvisual">
+          <a href="pro-vna-3d-kv.html" aria-label="Open Pro VNA 3D KV case study">
+            <div class="lh-work-media"><img loading="lazy" decoding="async" src="assets/img/2021/PRO_VNA_3D_KV/VNA-KV1-RGB%20copy.webp" alt="Pro VNA 3D KV"></div>
+            <div class="lh-work-body">
+              <h3 class="lh-work-title">Pro VNA 3D KV</h3>
+              <p class="lh-work-desc">Multi-thematic 3D scene composition and key visual designs for Vietnam Airlines.</p>
+              <div class="lh-work-meta-grid">
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Role</span>
+                  <span class="lh-work-meta-value">3D Composition & CGI</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Client</span>
+                  <span class="lh-work-meta-value">Vietnam Airlines</span>
+                </div>
+                <div class="lh-work-meta-item">
+                  <span class="lh-work-meta-label">Year</span>
+                  <span class="lh-work-meta-value">2021</span>
                 </div>
               </div>
               <span class="lh-work-cta">View Case Study <span class="lh-work-cta-arrow" aria-hidden="true">&rarr;</span></span>
@@ -816,6 +1037,23 @@
      ===================================================== -->
 <script>
 (function () {
+  // --- Reel hero power management: honour reduced motion, pause offscreen ---
+  var heroVideo = document.querySelector('[data-pf-hero-video]');
+  if (heroVideo) {
+    var reduceHero = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceHero) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
+    } else if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { heroVideo.play().catch(function () {}); }
+          else heroVideo.pause();
+        });
+      }, { threshold: 0.1 }).observe(heroVideo);
+    }
+  }
+
   var grid = document.querySelector('.lh-work-grid');
   if (!grid) return;
 
@@ -848,6 +1086,35 @@
     }
     return false;
   }
+
+  // --- Editorial card anatomy: archive index + category tags on the media ---
+  cards.forEach(function (card, i) {
+    var media = card.querySelector('.lh-work-media');
+    if (!media) return;
+
+    var idxEl = document.createElement('span');
+    idxEl.className = 'lh-work-index';
+    idxEl.setAttribute('aria-hidden', 'true');
+    idxEl.textContent = pad(i + 1) + ' / ' + pad(cards.length);
+    media.appendChild(idxEl);
+
+    // 'feature' is a collection flag (Recent Works), not a discipline — skip it
+    var tagCats = catsOf(card).filter(function (c) {
+      return c !== 'feature' && labels[c];
+    }).slice(0, 2);
+    if (tagCats.length) {
+      var wrap = document.createElement('span');
+      wrap.className = 'lh-work-tags';
+      wrap.setAttribute('aria-hidden', 'true');
+      tagCats.forEach(function (c) {
+        var t = document.createElement('span');
+        t.className = 'lh-work-tag';
+        t.textContent = labels[c];
+        wrap.appendChild(t);
+      });
+      media.appendChild(wrap);
+    }
+  });
 
   function showCard(card, idx) {
     var a = card.querySelector('a');

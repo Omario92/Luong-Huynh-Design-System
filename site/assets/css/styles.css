@@ -588,17 +588,46 @@ button, input, textarea { font: inherit; }
 
 .lh-work-media img,
 .lh-work-media video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   transform: scale(1.001);
   transition:
+    opacity 1.1s cubic-bezier(0.45, 0.05, 0.55, 0.95),
     transform var(--lh-dur-slow) var(--lh-ease),
     filter var(--lh-dur-slow) var(--lh-ease);
 }
 
-/* Cinematic reveal on hover — scale + contrast/saturation lift */
+.lh-work-media img {
+  z-index: 2;
+  opacity: 1;
+}
+
+.lh-work-media video {
+  z-index: 1;
+  opacity: 0;
+}
+
+/* Ambient loops (autoplay, no still frame) are the card's only media —
+   keep them visible and exempt from the hover dissolve. */
+.lh-work-media video[autoplay] {
+  opacity: 1;
+}
+
+/* Cinematic dissolve to video — gated on .is-video-playing (set by main.js
+   once the video actually has frames), so the still never drops to black
+   while a preload="none" video is still buffering. */
+.lh-work-card.is-video-playing .lh-work-media img {
+  opacity: 0;
+}
+
+.lh-work-card.is-video-playing .lh-work-media video {
+  opacity: 1;
+}
+
 .lh-work-card:hover .lh-work-media img,
 .lh-work-card:hover .lh-work-media video {
   transform: scale(1.055);
@@ -1372,13 +1401,37 @@ button, input, textarea { font: inherit; }
   letter-spacing: var(--type-lead-track);
 }
 
-.lh-detail-cover {
+.lh-scroll-zoom-section {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: var(--lh-radius-lg);
-  background: var(--lh-panel);
+  overflow: hidden; /* Keep it clean */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-block: clamp(32px, 5vw, 72px);
+}
+
+.lh-scroll-zoom-wrapper {
+  width: min(calc(100vw - (var(--lh-gutter) * 2)), var(--lh-max));
+  aspect-ratio: 16 / 9;
+  border-radius: var(--lh-radius-lg);
+  overflow: hidden;
+  position: relative;
+  margin-inline: auto;
+  will-change: width, border-radius;
+  transition: width 0.15s cubic-bezier(0.215, 0.61, 0.355, 1), border-radius 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.lh-scroll-zoom-wrapper .lh-detail-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  margin-block: 0;
+  border-radius: 0;
+  background: var(--lh-panel);
+  will-change: transform;
+  transform: translate3d(0px, 0px, 0px) scale(1.15); /* Start slightly zoomed in for parallax */
+  transition: transform 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 .lh-detail-body {
