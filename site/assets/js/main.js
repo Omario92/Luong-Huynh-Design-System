@@ -822,15 +822,342 @@
     handleScroll(); // Run initially
   }
 
+  // --- CTA Cinematic 3D Object (procedural sentinel that tracks the cursor) ---
+  // Injected into every .lh-cta / .lh-footer-cta panel so the whole site picks
+  // it up from one place. Three.js is lazy-loaded from a CDN only when a CTA is
+  // actually present and motion is allowed.
+  let _threePromise = null;
+  function loadThree() {
+    if (window.THREE) return Promise.resolve(window.THREE);
+    if (_threePromise) return _threePromise;
+    _threePromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+      s.async = true;
+      s.onload = () => (window.THREE ? resolve(window.THREE) : reject(new Error('THREE missing')));
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+    return _threePromise;
+  }
+
+  // Radial-gradient sprite texture for additive glows (eye + antenna tip).
+  function makeGlowTexture(THREE, rgb) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 128;
+    const g = c.getContext('2d');
+    const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, 'rgba(' + rgb + ',1)');
+    grad.addColorStop(0.25, 'rgba(' + rgb + ',0.55)');
+    grad.addColorStop(1, 'rgba(' + rgb + ',0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 128, 128);
+    const tex = new THREE.Texture(c);
+    tex.needsUpdate = true;
+    return tex;
+  }
+
+  function buildSentinel(THREE, cta, coarse) {
+    if (cta.querySelector('.lh-cta-object')) return; // already built
+
+    const host = document.createElement('div');
+    host.className = 'lh-cta-object';
+    host.setAttribute('aria-hidden', 'true');
+    cta.appendChild(host);
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
+    } catch (e) {
+      host.remove();
+      return;
+    }
+    const ACCENT = 0x00f0ff;
+    let w = host.clientWidth || 1;
+    let h = host.clientHeight || 1;
+    renderer.setClearAlpha(0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(w, h);
+    if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+    else if ('outputEncoding' in renderer) renderer.outputEncoding = THREE.sRGBEncoding;
+    host.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(34, w / h, 0.1, 100);
+    camera.position.set(0.55, 0.15, 6.4);
+    camera.lookAt(0, 0, 0);
+
+    // --- lighting: cyan key + warm-ivory rim + low ambient (cinematic) ---
+    scene.add(new THREE.AmbientLight(0x404a52, 0.9));
+    const key = new THREE.DirectionalLight(ACCENT, 2.1);
+    key.position.set(3, 4, 5);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0xf4f0e8, 1.5);
+    rim.position.set(-4, 2, -3);
+    scene.add(rim);
+    const eyePoint = new THREE.PointLight(ACCENT, 1.4, 7);
+    eyePoint.position.set(0, 0, 2);
+    scene.add(eyePoint);
+
+    // --- the head group (this is what turns toward the pointer) ---
+    const head = new THREE.Group();
+    scene.add(head);
+
+    // faceted helmet
+    const helmet = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(1.18, 1),
+      new THREE.MeshStandardMaterial({ color: 0x1b1f25, metalness: 0.62, roughness: 0.34, flatShading: true })
+    );
+    helmet.scale.set(1, 1.12, 0.96);
+    head.add(helmet);
+
+    // dark visor band across the front
+    const visor = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.16, 1.18, 6, 16),
+      new THREE.MeshStandardMaterial({ color: 0x0a0c0f, metalness: 0.4, roughness: 0.5 })
+    );
+    visor.rotation.z = Math.PI / 2;
+    visor.position.set(0, 0.12, 0.92);
+    head.add(visor);
+
+    // glowing scanner eye
+    const eye = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.07, 0.92, 4, 12),
+      new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 1.8, roughness: 0.3 })
+    );
+    eye.rotation.z = Math.PI / 2;
+    eye.position.set(0, 0.12, 1.02);
+    head.add(eye);
+
+    const eyeGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeGlowTexture(THREE, '0,240,255'), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }));
+    eyeGlow.scale.set(2.4, 1.1, 1);
+    eyeGlow.position.set(0, 0.12, 1.06);
+    head.add(eyeGlow);
+
+    // side audio pods
+    [-1, 1].forEach((sx) => {
+      const pod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.22, 0.22, 0.16, 18),
+        new THREE.MeshStandardMaterial({ color: 0x14171c, metalness: 0.7, roughness: 0.3 })
+      );
+      pod.rotation.z = Math.PI / 2;
+      pod.position.set(sx * 1.06, -0.05, 0.1);
+      head.add(pod);
+      const podRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.1, 0.025, 8, 20),
+        new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 1.2, roughness: 0.4 })
+      );
+      podRing.position.set(sx * 1.15, -0.05, 0.1);
+      podRing.rotation.y = Math.PI / 2;
+      head.add(podRing);
+    });
+
+    // antenna + glowing tip
+    const antenna = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.04, 0.7, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2a2f36, metalness: 0.8, roughness: 0.3 })
+    );
+    antenna.position.set(0.34, 1.3, 0);
+    antenna.rotation.z = -0.18;
+    head.add(antenna);
+    const tip = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08, 12, 12),
+      new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 2 })
+    );
+    tip.position.set(0.28, 1.66, 0);
+    head.add(tip);
+    const tipGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeGlowTexture(THREE, '0,240,255'), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }));
+    tipGlow.scale.set(0.7, 0.7, 1);
+    tipGlow.position.copy(tip.position);
+    head.add(tipGlow);
+
+    // --- orbiting hairline ring (independent of the head) ---
+    const orbit = new THREE.Mesh(
+      new THREE.TorusGeometry(1.9, 0.012, 8, 80),
+      new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.4, transparent: true, opacity: 0.55 })
+    );
+    orbit.rotation.x = 1.15;
+    scene.add(orbit);
+
+    // --- floating dust ---
+    const dustN = 90;
+    const dustPos = new Float32Array(dustN * 3);
+    for (let i = 0; i < dustN; i++) {
+      dustPos[i * 3] = (Math.random() - 0.5) * 7;
+      dustPos[i * 3 + 1] = (Math.random() - 0.5) * 6;
+      dustPos[i * 3 + 2] = (Math.random() - 0.5) * 4 - 1;
+    }
+    const dustGeo = new THREE.BufferGeometry();
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xf4f0e8, size: 0.03, transparent: true, opacity: 0.5, depthWrite: false }));
+    scene.add(dust);
+
+    // --- pointer state (viewport-global so the head "watches the room") ---
+    const ptr = { x: 0, y: 0, t: -9999 };
+    let rect = host.getBoundingClientRect();
+    const refreshRect = () => { rect = host.getBoundingClientRect(); };
+    if (!coarse) {
+      window.addEventListener('pointermove', (e) => {
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        ptr.x = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth * 0.5)));
+        ptr.y = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight * 0.5)));
+        ptr.t = performance.now();
+      }, { passive: true });
+    }
+
+    function resize() {
+      w = host.clientWidth || 1;
+      h = host.clientHeight || 1;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      refreshRect();
+    }
+    window.addEventListener('resize', resize);
+    window.addEventListener('scroll', refreshRect, { passive: true });
+
+    const clock = new THREE.Clock();
+    let running = false, rafId = 0;
+    const MAX_YAW = 0.62, MAX_PITCH = 0.4;
+
+    function frame() {
+      if (!running) return;
+      const t = clock.getElapsedTime();
+      const dt = Math.min(clock.getDelta(), 0.05);
+
+      // target look direction — follow cursor, or idle-sweep when pointer rests
+      let ty, tp;
+      const idle = coarse || (performance.now() - ptr.t > 2600);
+      if (idle) {
+        ty = Math.sin(t * 0.45) * 0.42;
+        tp = Math.sin(t * 0.31) * 0.12;
+      } else {
+        ty = ptr.x * MAX_YAW;
+        tp = ptr.y * MAX_PITCH;
+      }
+      head.rotation.y += (ty - head.rotation.y) * 0.07;
+      head.rotation.x += (tp - head.rotation.x) * 0.07;
+      head.position.y = Math.sin(t * 0.9) * 0.06;        // cinematic float
+      head.position.x = Math.sin(t * 0.6) * 0.03;
+
+      const pulse = 1.7 + Math.sin(t * 2.4) * 0.5;
+      eye.material.emissiveIntensity = pulse;
+      eyeGlow.scale.set(2.4 + Math.sin(t * 2.4) * 0.18, 1.1, 1);
+      eyePoint.intensity = 1.2 + Math.sin(t * 2.4) * 0.3;
+
+      orbit.rotation.z += dt * 0.25;
+      orbit.rotation.x = 1.15 + Math.sin(t * 0.4) * 0.08;
+      dust.rotation.y += dt * 0.02;
+
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(frame);
+    }
+    function start() { if (!running) { running = true; clock.getDelta(); rafId = requestAnimationFrame(frame); } }
+    function stop() { running = false; cancelAnimationFrame(rafId); }
+
+    // only render while the CTA is on screen
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        entries.forEach((e) => { e.isIntersecting ? start() : stop(); });
+      }, { threshold: 0.05 }).observe(host);
+    } else {
+      start();
+    }
+    resize();
+  }
+
+  // --- Credibility stat counters: count up from 0 when scrolled into view ---
+  function initStatCounters() {
+    const groups = document.querySelectorAll('.lh-stats');
+    if (!groups.length) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function run(el) {
+      const target = parseFloat(el.dataset.countTo) || 0;
+      if (reduce) { el.textContent = String(target); return; }
+      const dur = 1600;
+      const start = performance.now();
+      const ease = (t) => 1 - Math.pow(1 - t, 3); // easeOutCubic
+      function tick(now) {
+        const p = Math.min(1, (now - start) / dur);
+        el.textContent = String(Math.round(target * ease(p)));
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = String(target);
+      }
+      el.textContent = '0';
+      requestAnimationFrame(tick);
+    }
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.querySelectorAll('[data-count-to]').forEach(run);
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.35 });
+      groups.forEach((g) => io.observe(g));
+    } else {
+      groups.forEach((g) => g.querySelectorAll('[data-count-to]').forEach(run));
+    }
+  }
+
+  // --- Selected Frames reel strip: clone track for a seamless marquee loop ---
+  function initReelStrips() {
+    const reels = document.querySelectorAll('[data-reel]');
+    if (!reels.length) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    reels.forEach(reel => {
+      const track = reel.querySelector('.lh-reel-track');
+      if (!track) return;
+      // Reduced motion: leave it as a native horizontal scroll (no auto-loop).
+      if (reduce) return;
+
+      const originals = Array.prototype.slice.call(track.children);
+      if (!originals.length) return;
+
+      // Duplicate the set so translateX(-50%) lands exactly on the seam.
+      originals.forEach(node => {
+        const clone = node.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        clone.setAttribute('tabindex', '-1');           // keep clones out of tab order
+        track.appendChild(clone);
+      });
+
+      // Speed scales with the number of frames so the pace feels constant.
+      const dur = Math.max(28, originals.length * 7);
+      reel.style.setProperty('--lh-reel-dur', dur + 's');
+      reel.classList.add('is-animated');
+    });
+  }
+
+  function initCtaObjects() {
+    const ctas = document.querySelectorAll('.lh-cta, .lh-footer-cta');
+    if (!ctas.length) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    loadThree()
+      .then((THREE) => { ctas.forEach((cta) => buildSentinel(THREE, cta, coarse)); })
+      .catch(() => {});
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       initCustomCursor();
       initCardHoverVideos();
       initScrollZoomVideo();
+      initStatCounters();
+      initReelStrips();
+      initCtaObjects();
     });
   } else {
     initCustomCursor();
     initCardHoverVideos();
     initScrollZoomVideo();
+    initStatCounters();
+    initReelStrips();
+    initCtaObjects();
   }
 })();
