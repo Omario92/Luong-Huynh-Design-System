@@ -11,6 +11,7 @@
 * `npm run dev` / `live-server` hoặc tương đương để chạy preview.
 
 ## Recent Changes
+- **2026-06-16**: Thiết lập video loop thumbnail cho hai dự án "Huda CSR" và "TVC HERO 15s" trên `portfolio.html`; đồng thời xóa bỏ hoàn toàn dự án "BTS Soda" (gồm file `bts-soda.html`, thư mục media và project card), cập nhật lại tổng số dự án (13 -> 12) và định hình lại chuỗi loop navigation.
 - **2026-06-16**: Bổ sung 2 dự án AI mới của năm 2025 là "Juice Monster AI" và "Clear Men AI" vào `portfolio.html` và tạo các trang chi tiết case study tương ứng `juice-monster-ai.html` và `clear-men-ai.html` với đầy đủ cover video (scroll-zoom) và gallery ảnh concept (đối với Clear Men); đồng thời cập nhật tổng dự án (11 -> 13) và thiết lập chuỗi loop navigation giữa các dự án.
 - **2026-06-16**: Bổ sung phần gallery "3D Playblasts" chứa 11 video wireframe playblast (từ `assets/video/2024/CGI Beverage Demo/`) vào trang chi tiết dự án "BT Studio – CGI Beverage Demo" (file `bt-studio-cgi-beverage-demo.html`).
 - **2026-06-15**: Bổ sung dự án mới "BTS Soda" (năm 2023, BT Studio) vào `portfolio.html` và tạo trang chi tiết `bts-soda.html`: dùng `BTS SODA.mp4` làm cover video (scroll-zoom) và 11 video còn lại (A_01–A_09, gồm A_06_1/2/3) làm gallery "3D Playblasts" dạng lưới 2 cột; cập nhật bộ đếm dự án (10 → 11, "Index 01 — 11") và chèn dự án vào chuỗi loop navigation giữa "BT Studio – CGI Beverage Demo" và "Twister Milk Bottle". Toàn bộ media tham chiếu cục bộ từ `assets/img/2023/BTS Soda/`.
