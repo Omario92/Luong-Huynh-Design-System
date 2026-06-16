@@ -825,6 +825,187 @@ button, input, textarea { font: inherit; }
 
 @keyframes lh-marquee { to { transform: translateX(-100%); } }
 
+/* ── 13b. SELECTED FRAMES — CINEMATIC REEL STRIP ──────────
+   Full-bleed auto-scrolling film strip of selected work, used
+   on the About page as visual proof. main.js clones the track
+   for a seamless loop (.is-animated); without JS / under reduced
+   motion it degrades to a native horizontal scroll. Edge fade
+   masks the in/out so frames slide off cleanly. */
+.lh-reel {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(6px, 1.2vw, 14px);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+
+.lh-reel-track {
+  display: flex;
+  gap: clamp(12px, 1.4vw, 20px);
+  width: max-content;
+  padding-inline: var(--lh-gutter);
+  will-change: transform;
+}
+
+.lh-reel.is-animated .lh-reel-track {
+  animation: lh-reel-scroll var(--lh-reel-dur, 48s) linear infinite;
+}
+.lh-reel.is-animated:hover .lh-reel-track {
+  animation-play-state: paused;
+}
+
+/* No-JS / reduced-motion fallback: native horizontal scroll */
+.lh-reel:not(.is-animated) {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.lh-reel:not(.is-animated)::-webkit-scrollbar { display: none; }
+
+@keyframes lh-reel-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.lh-reel-frame {
+  position: relative;
+  flex: 0 0 auto;
+  height: clamp(220px, 26vw, 340px);
+  aspect-ratio: 4 / 3;
+  border-radius: var(--lh-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--lh-line);
+  background: var(--lh-panel);
+  color: inherit;
+  transition:
+    border-color var(--lh-dur-base) var(--lh-ease),
+    transform    var(--lh-dur-base) var(--lh-ease);
+}
+.lh-reel-frame:hover {
+  border-color: color-mix(in srgb, var(--lh-accent) 40%, var(--lh-line-strong));
+  transform: translateY(-4px);
+}
+
+.lh-reel-frame img,
+.lh-reel-frame video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition:
+    transform var(--lh-dur-slow) var(--lh-ease),
+    filter    var(--lh-dur-slow) var(--lh-ease);
+}
+.lh-reel-frame:hover img,
+.lh-reel-frame:hover video {
+  transform: scale(1.1);
+  filter: contrast(1.08) saturate(1.1);
+}
+
+/* scrim so the caption stays legible over any frame */
+.lh-reel-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(7, 7, 7, 0.85), transparent 52%);
+  pointer-events: none;
+}
+
+.lh-reel-cap {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  z-index: 2;
+}
+.lh-reel-cap-title {
+  margin: 0;
+  font-family: var(--font-display-alt);
+  font-size: clamp(15px, 1.3vw, 18px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-transform: none;
+  color: var(--lh-text);
+}
+.lh-reel-cap-meta {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lh-muted);
+  transition: color var(--lh-dur-base) var(--lh-ease);
+}
+.lh-reel-frame:hover .lh-reel-cap-meta { color: var(--lh-accent); }
+
+.lh-reel-idx {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(244, 240, 232, 0.7);
+  text-shadow: 0 1px 8px rgba(7, 7, 7, 0.8);
+}
+
+/* ── 13c. CREDIBILITY STATS BAND ──────────────────────────
+   Quantified authority between the story and the reel. Hairline
+   grid (gap = --lh-line) matching the service/capability grids.
+   Numbers count up on scroll via main.js (initStatCounters);
+   they start at their final text so no-JS still reads correctly. */
+.lh-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border-block: 1px solid var(--lh-line);
+  background: var(--lh-line);
+}
+
+.lh-stat {
+  background: var(--lh-bg);
+  padding: clamp(28px, 4vw, 52px) clamp(16px, 2vw, 30px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lh-stat-num {
+  display: inline-flex;
+  align-items: flex-start;
+  font-family: var(--font-display-alt);
+  font-size: clamp(40px, 6vw, 84px);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  color: var(--lh-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lh-stat-suffix {
+  color: var(--lh-accent);
+  font-size: 0.46em;
+  line-height: 1;
+  margin-left: 3px;
+}
+
+.lh-stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lh-muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .lh-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /* ── 14. ABOUT PAGE ───────────────────────────────────*/
 /* ── ABOUT HERO SECTION ─────────────────────────────── */
 .lh-about-hero {
@@ -834,7 +1015,7 @@ button, input, textarea { font: inherit; }
   align-items: center;
   padding-block: clamp(120px, 14vw, 200px) clamp(80px, 10vw, 140px);
   background: 
-    radial-gradient(circle at 80% 30%, rgba(215, 255, 63, 0.03), transparent 30vw),
+    radial-gradient(circle at 80% 30%, rgba(0, 240, 255, 0.05), transparent 30vw),
     radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.06), transparent 25vw),
     #050505;
   border-bottom: 1px solid var(--lh-line);
@@ -889,7 +1070,7 @@ button, input, textarea { font: inherit; }
 .lh-about-accent-line {
   width: 32px;
   height: 1px;
-  background-color: #d7ff3f; /* restrained acid lime underline */
+  background-color: var(--lh-accent); /* brand cyan underline */
 }
 
 .lh-about-name {
@@ -915,7 +1096,7 @@ button, input, textarea { font: inherit; }
 }
 
 .lh-accent-lime {
-  color: #d7ff3f; /* Restrained lime color on key text */
+  color: var(--lh-accent); /* brand cyan accent on key text */
 }
 
 .lh-about-lead {
@@ -1148,7 +1329,7 @@ button, input, textarea { font: inherit; }
     background var(--lh-dur-base) var(--lh-ease);
 }
 
-/* Very thin lime accent line at the bottom on hover */
+/* Very thin cyan accent line at the bottom on hover */
 .lh-capability-card::after {
   content: "";
   position: absolute;
@@ -1156,7 +1337,7 @@ button, input, textarea { font: inherit; }
   bottom: 0;
   width: 100%;
   height: 2px;
-  background-color: #d7ff3f; /* acid lime */
+  background-color: var(--lh-accent); /* brand cyan */
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--lh-dur-base) var(--lh-ease);
@@ -1247,7 +1428,45 @@ button, input, textarea { font: inherit; }
   border: 1px solid var(--lh-line);
 }
 
+/* ── CTA CINEMATIC 3D OBJECT ──────────────────────────
+   Procedural WebGL "sentinel" injected by main.js into the
+   right edge of every CTA panel. Sits behind the copy (the
+   panel is overflow:hidden, so it letterboxes cleanly) and
+   never intercepts clicks. A left-side mask fades it into
+   the gradient so the headline stays the hero. */
+.lh-cta > *:not(.lh-cta-object),
+.lh-footer-cta > *:not(.lh-cta-object) {
+  position: relative;
+  z-index: 2;
+}
 
+.lh-cta-object {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(54%, 580px);
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 42%);
+          mask-image: linear-gradient(to right, transparent, #000 42%);
+}
+
+.lh-cta-object canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 767px) {
+  /* Keep it on mobile but recede it well behind the copy. */
+  .lh-cta-object {
+    width: 100%;
+    opacity: 0.32;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 70%);
+            mask-image: linear-gradient(to bottom, transparent, #000 70%);
+  }
+}
 
 #lh-particle-canvas {
   width: 100%;
