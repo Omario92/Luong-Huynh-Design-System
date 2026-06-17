@@ -826,18 +826,38 @@
   // Injected into every .lh-cta / .lh-footer-cta panel so the whole site picks
   // it up from one place. Three.js is lazy-loaded from a CDN only when a CTA is
   // actually present and motion is allowed.
+  // three r147 is the last release that still ships the classic UMD
+  // examples/js loaders, so GLTFLoader can attach to the global THREE
+  // without an ES-module import map.
+  const THREE_VER = '0.147.0';
+  const MODEL_URL = 'assets/models/robot.glb';
   let _threePromise = null;
   function loadThree() {
-    if (window.THREE) return Promise.resolve(window.THREE);
+    if (window.THREE && window.THREE.GLTFLoader) return Promise.resolve(window.THREE);
     if (_threePromise) return _threePromise;
-    _threePromise = new Promise((resolve, reject) => {
+    const inject = (src) => new Promise((res, rej) => {
       const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+      s.src = src;
       s.async = true;
-      s.onload = () => (window.THREE ? resolve(window.THREE) : reject(new Error('THREE missing')));
-      s.onerror = reject;
+      s.onload = res;
+      s.onerror = rej;
       document.head.appendChild(s);
     });
+    const ex = `https://cdn.jsdelivr.net/npm/three@${THREE_VER}/examples/js/`;
+    _threePromise = inject(`https://cdn.jsdelivr.net/npm/three@${THREE_VER}/build/three.min.js`)
+      .then(() => {
+        if (!window.THREE) throw new Error('THREE missing');
+        return Promise.all([
+          inject(ex + 'loaders/GLTFLoader.js'),
+          // RoomEnvironment gives the PBR materials something to reflect — the
+          // single biggest upgrade to how "cinematic" the model reads.
+          inject(ex + 'environments/RoomEnvironment.js'),
+        ]);
+      })
+      .then(() => {
+        if (!window.THREE.GLTFLoader) throw new Error('GLTFLoader missing');
+        return window.THREE;
+      });
     return _threePromise;
   }
 
@@ -875,109 +895,208 @@
     const ACCENT = 0x00f0ff;
     let w = host.clientWidth || 1;
     let h = host.clientHeight || 1;
+    // transparent buffer: the CSS left-mask fades the scene into the CTA gradient
     renderer.setClearAlpha(0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(w, h);
     if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
     else if ('outputEncoding' in renderer) renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, w / h, 0.1, 100);
-    camera.position.set(0.55, 0.15, 6.4);
-    camera.lookAt(0, 0, 0);
+    const camera = new THREE.PerspectiveCamera(30, w / h, 0.1, 100);
+    camera.position.set(0.6, 0.45, 9.2);
+    camera.lookAt(0, 0.35, 0);
 
-    // --- lighting: cyan key + warm-ivory rim + low ambient (cinematic) ---
-    scene.add(new THREE.AmbientLight(0x404a52, 0.9));
-    const key = new THREE.DirectionalLight(ACCENT, 2.1);
-    key.position.set(3, 4, 5);
+    // --- barely-there image-based lighting: a trace of reflection so the
+    // plastic/metal isn't pure black. envMapIntensity is dialed right down. ---
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envScene = new THREE.RoomEnvironment();
+    scene.environment = pmrem.fromScene(envScene, 0.04).texture;
+    envScene.dispose && envScene.dispose();
+
+    // ── LIGHTING RIG ──────────────────────────────────────────────────────
+    // Cinematic three-zone setup: a strong WARM back/rim that separates the
+    // robot from the haze, a soft COOL key from front-left, and a cyan ACCENT
+    // rim that ties into the brand glow. Ambient stays near-zero so the rims do
+    // the storytelling and highlights stay crisp.
+    scene.add(new THREE.AmbientLight(0x0a1018, 0.06));
+
+    // KEY — soft, cool, front-left. Gentle fill that shapes the face/chest.
+    const key = new THREE.DirectionalLight(0x6A5ACD, 0.15);
+    key.position.set(-7, 2.5, 2.5);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0xf4f0e8, 1.5);
-    rim.position.set(-4, 2, -3);
+
+    // WARM BACKLIGHT (hero) — amber, high and behind-right, throws the bright
+    // rim onto the head/shoulders.
+    const backRim = new THREE.DirectionalLight(0xffa24d, 0.6);
+    backRim.position.set(3.5, 4.5, -6);
+    scene.add(backRim);
+    // a warm point tucked behind the robot for a soft glow on its back
+    const backGlow = new THREE.PointLight(0xff8a3a, 1.0, 9, 2);
+    backGlow.position.set(0.6, 1.4, -3.2);
+    scene.add(backGlow);
+
+    // CYAN ACCENT rim — grazes the left edge, brand-coloured.
+    const rim = new THREE.DirectionalLight(ACCENT, 1.35);
+    rim.position.set(-6, 2.2, -4.5);
     scene.add(rim);
-    const eyePoint = new THREE.PointLight(ACCENT, 1.4, 7);
-    eyePoint.position.set(0, 0, 2);
+
+    // tiny cyan spill from the face so the eyes glow reads on nearby surfaces
+    const eyePoint = new THREE.PointLight(ACCENT, 0.25, 5, 2);
+    eyePoint.position.set(0, 1.25, 1.4);
     scene.add(eyePoint);
 
-    // --- the head group (this is what turns toward the pointer) ---
-    const head = new THREE.Group();
-    scene.add(head);
+    // SHADOW caster — dim cool light from above whose real job is a soft
+    // contact shadow on the platform (PCFSoft + large radius = not hard-edged).
+    const shadowLight = new THREE.DirectionalLight(0xbcd4e6, 0.15);
+    shadowLight.position.set(0, 10, -3);
+    shadowLight.castShadow = true;
+    shadowLight.shadow.mapSize.set(2048, 2048);
+    shadowLight.shadow.camera.near = 1;
+    shadowLight.shadow.camera.far = 20;
+    shadowLight.shadow.camera.left = -4;
+    shadowLight.shadow.camera.right = 4;
+    shadowLight.shadow.camera.top = 4;
+    shadowLight.shadow.camera.bottom = -4;
+    shadowLight.shadow.bias = -0.0006;
+    shadowLight.shadow.radius = 6;
+    scene.add(shadowLight);
 
-    // faceted helmet
-    const helmet = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(1.18, 1),
-      new THREE.MeshStandardMaterial({ color: 0x1b1f25, metalness: 0.62, roughness: 0.34, flatShading: true })
+    // --- bot root group: the loaded glb lives here; it floats + turns ---
+    const PODIUM_TOP = -1.64;            // world-Y of the podium's top surface
+    const bot = new THREE.Group();
+    scene.add(bot);
+
+    let model = null;        // the loaded gltf.scene
+    let headNode = null;     // the "head" node (turns toward the pointer)
+    const glowMats = [];     // emissive materials we pulse (eyes / accents)
+
+    const loader = new THREE.GLTFLoader();
+    loader.load(MODEL_URL, (gltf) => {
+      model = gltf.scene;
+
+      // Collect emissive materials so we can pulse the glow. The emissive
+      // is gated by an emission map, so only the eyes/accents light up.
+      // r147's loader ignores KHR_materials_emissive_strength, so bump it.
+      const seenMats = new Set();           // 16 meshes share one material — touch it once
+      model.traverse((o) => {
+        if (!o.isMesh) return;
+        o.frustumCulled = false;
+        o.castShadow = true;
+        o.receiveShadow = true;
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach((m) => {
+          if (!m || seenMats.has(m)) return;
+          seenMats.add(m);
+          m.envMapIntensity = 0.12;            // dim IBL — keep the scene dark
+          if (m.emissive && (m.emissive.r + m.emissive.g + m.emissive.b) > 0.01) {
+            m.emissiveIntensity = 2.2;
+            m.toneMapped = false;
+            glowMats.push(m);
+          }
+        });
+      });
+
+      // Auto-fit: scale to a target height, centre on X/Z, rest the feet on
+      // the podium so the model works regardless of its authored units.
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const s = 3.4 / (size.y || 1);
+      model.scale.setScalar(s);
+      model.position.set(-center.x * s, -box.min.y * s + PODIUM_TOP, -center.z * s);
+      bot.add(model);
+
+      headNode = model.getObjectByName('head');
+      if (headNode) headNode.userData.q0 = headNode.quaternion.clone();
+
+      resize();
+    }, undefined, () => { host.classList.add('lh-cta-object--nomodel'); });
+
+    // ===== PLATFORM / PODIUM =====
+    const podium = new THREE.Group();
+    podium.position.set(0, -1.78, 0);
+    scene.add(podium);
+    // beveled disk via a lathed cross-section (chamfered top edge). Colour is
+    // ~40% darker than before; the cyan rim ring stays bright on top of it.
+    const podProfile = [
+      [0.00, -0.12], [1.55, -0.12],   // bottom: centre → outer corner
+      [1.50, 0.12],                   // near-straight side up to just below the top
+      [1.48, 0.14],                   // tiny ~2px chamfer that catches the rim light
+      [1.30, 0.14], [0.00, 0.14],     // flat top: outer → centre
+    ].map((p) => new THREE.Vector2(p[0], p[1]));
+    const disk = new THREE.Mesh(
+      new THREE.LatheGeometry(podProfile, 72),
+      // glossier top → subtle reflections of the ring + robot; envMap lifted
+      new THREE.MeshStandardMaterial({ color: 0x080b0f, metalness: 0.7, roughness: 0.28, envMapIntensity: 0.6 })
     );
-    helmet.scale.set(1, 1.12, 0.96);
-    head.add(helmet);
-
-    // dark visor band across the front
-    const visor = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.16, 1.18, 6, 16),
-      new THREE.MeshStandardMaterial({ color: 0x0a0c0f, metalness: 0.4, roughness: 0.5 })
+    disk.receiveShadow = true;                  // catches the robot's contact shadow
+    podium.add(disk);
+    // bright cyan ring — the glowing light strip on the platform rim.
+    const podRing = new THREE.Mesh(
+      new THREE.TorusGeometry(1.3, 0.022, 12, 120),
+      new THREE.MeshStandardMaterial({ color: 0xd6ffff, emissive: 0x9ffcff, emissiveIntensity: 1.6, roughness: 0.3 })
     );
-    visor.rotation.z = Math.PI / 2;
-    visor.position.set(0, 0.12, 0.92);
-    head.add(visor);
-
-    // glowing scanner eye
-    const eye = new THREE.Mesh(
-      new THREE.CapsuleGeometry(0.07, 0.92, 4, 12),
-      new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 1.8, roughness: 0.3 })
+    podRing.rotation.x = Math.PI / 2;
+    podRing.position.y = 0.142;
+    podium.add(podRing);
+    // faint wide halo just outside the ring for a soft falloff on the disk
+    const podHalo = new THREE.Mesh(
+      new THREE.RingGeometry(1.30, 1.46, 96),
+      new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false })
     );
-    eye.rotation.z = Math.PI / 2;
-    eye.position.set(0, 0.12, 1.02);
-    head.add(eye);
+    podHalo.rotation.x = -Math.PI / 2;
+    podHalo.position.y = 0.145;
+    podium.add(podHalo);
 
-    const eyeGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeGlowTexture(THREE, '0,240,255'), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }));
-    eyeGlow.scale.set(2.4, 1.1, 1);
-    eyeGlow.position.set(0, 0.12, 1.06);
-    head.add(eyeGlow);
-
-    // side audio pods
-    [-1, 1].forEach((sx) => {
-      const pod = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.22, 0.22, 0.16, 18),
-        new THREE.MeshStandardMaterial({ color: 0x14171c, metalness: 0.7, roughness: 0.3 })
-      );
-      pod.rotation.z = Math.PI / 2;
-      pod.position.set(sx * 1.06, -0.05, 0.1);
-      head.add(pod);
-      const podRing = new THREE.Mesh(
-        new THREE.TorusGeometry(0.1, 0.025, 8, 20),
-        new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 1.2, roughness: 0.4 })
-      );
-      podRing.position.set(sx * 1.15, -0.05, 0.1);
-      podRing.rotation.y = Math.PI / 2;
-      head.add(podRing);
-    });
-
-    // antenna + glowing tip
-    const antenna = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.025, 0.04, 0.7, 8),
-      new THREE.MeshStandardMaterial({ color: 0x2a2f36, metalness: 0.8, roughness: 0.3 })
-    );
-    antenna.position.set(0.34, 1.3, 0);
-    antenna.rotation.z = -0.18;
-    head.add(antenna);
-    const tip = new THREE.Mesh(
-      new THREE.SphereGeometry(0.08, 12, 12),
-      new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 2 })
-    );
-    tip.position.set(0.28, 1.66, 0);
-    head.add(tip);
-    const tipGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeGlowTexture(THREE, '0,240,255'), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }));
-    tipGlow.scale.set(0.7, 0.7, 1);
-    tipGlow.position.copy(tip.position);
-    head.add(tipGlow);
-
-    // --- orbiting hairline ring (independent of the head) ---
+    // --- orbiting hairline arc behind the bot ---
     const orbit = new THREE.Mesh(
-      new THREE.TorusGeometry(1.9, 0.012, 8, 80),
-      new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.4, transparent: true, opacity: 0.55 })
+      new THREE.TorusGeometry(2.5, 0.011, 8, 120),
+      new THREE.MeshStandardMaterial({ color: ACCENT, emissive: ACCENT, emissiveIntensity: 1.0, transparent: true, opacity: 0.55 })
     );
-    orbit.rotation.x = 1.15;
+    orbit.rotation.set(1.2, 0.3, 0);
+    orbit.position.set(0, 0.6, -1.2);
     scene.add(orbit);
+
+    // --- floating low-poly shapes: teal, semi-transparent, faint glow ---
+    // Two shared materials keep draw setup cheap. "edge" ones glow a touch more
+    // so Bloom rims them; all are translucent and fade into the fog with depth.
+    const triMat = new THREE.MeshStandardMaterial({
+      color: 0x1b3038, metalness: 0.3, roughness: 0.5, flatShading: true,
+      emissive: 0x123038, emissiveIntensity: 0.5, transparent: true, opacity: 0.45,
+    });
+    const triEdgeMat = new THREE.MeshStandardMaterial({
+      color: 0x214049, metalness: 0.2, roughness: 0.55, flatShading: true,
+      emissive: ACCENT, emissiveIntensity: 0.6, transparent: true, opacity: 0.55,
+    });
+    const tris = [];
+    const TRI_DEFS = [
+      // [x, y, z, size, edge?]
+      [-3.4, 1.8, -3.5, 0.55, false], [3.6, 2.2, -4.0, 0.7, true],
+      [-2.6, -1.4, -3.0, 0.42, false], [3.0, -0.6, -3.2, 0.5, false],
+      [-4.0, 0.2, -5.0, 0.9, true], [4.4, 1.0, -5.5, 0.8, false],
+      [1.8, 2.8, -4.5, 0.4, false], [-1.6, 2.6, -4.2, 0.38, true],
+      [2.4, -1.8, -4.0, 0.6, false], [-3.0, -0.2, -2.6, 0.34, false],
+      [-4.6, 2.6, -6.0, 0.5, true], [4.0, -1.6, -5.2, 0.45, false],
+    ];
+    TRI_DEFS.forEach((d) => {
+      const geo = Math.random() < 0.5 ? new THREE.TetrahedronGeometry(d[3]) : new THREE.OctahedronGeometry(d[3]);
+      const m = new THREE.Mesh(geo, d[4] ? triEdgeMat : triMat);
+      m.position.set(d[0], d[1], d[2]);
+      m.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      m.userData = {
+        rs: (Math.random() - 0.5) * 0.4,            // rotation speed
+        rs2: (Math.random() - 0.5) * 0.3,
+        fa: Math.random() * Math.PI * 2,            // float phase
+        fs: 0.25 + Math.random() * 0.35,            // float speed
+        fy: d[1], amp: 0.15 + Math.random() * 0.25, // float anchor + amplitude
+      };
+      scene.add(m);
+      tris.push(m);
+    });
 
     // --- floating dust ---
     const dustN = 90;
@@ -1016,10 +1135,21 @@
     }
     window.addEventListener('resize', resize);
     window.addEventListener('scroll', refreshRect, { passive: true });
+    // The CTA panel's height shifts as fonts/layout settle, so a one-off size
+    // read leaves the canvas buffer stretched. Keep it locked to the host box.
+    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(host);
 
     const clock = new THREE.Clock();
     let running = false, rafId = 0;
-    const MAX_YAW = 0.62, MAX_PITCH = 0.4;
+    const MAX_YAW = 0.6, MAX_PITCH = 0.35;
+    const BASE_YAW = THREE.MathUtils.degToRad(-30);  // resting three-quarter turn (to the left)
+    let curYaw = 0, curPitch = 0;        // smoothed look state
+    // reused for the head's look rotation. The "head" node has a baked 90°
+    // X-rotation (Blender Z-up export), so its local axes are NOT world axes —
+    // we pre-multiply a world-space delta onto the base quaternion instead of
+    // using rotateY/rotateX, which would tilt/roll the head instead of yaw it.
+    const _lookEuler = new THREE.Euler(0, 0, 0, 'YXZ');
+    const _lookQuat = new THREE.Quaternion();
 
     function frame() {
       if (!running) return;
@@ -1036,18 +1166,37 @@
         ty = ptr.x * MAX_YAW;
         tp = ptr.y * MAX_PITCH;
       }
-      head.rotation.y += (ty - head.rotation.y) * 0.07;
-      head.rotation.x += (tp - head.rotation.x) * 0.07;
-      head.position.y = Math.sin(t * 0.9) * 0.06;        // cinematic float
-      head.position.x = Math.sin(t * 0.6) * 0.03;
+      curYaw += (ty - curYaw) * 0.07;
+      curPitch += (tp - curPitch) * 0.07;
 
-      const pulse = 1.7 + Math.sin(t * 2.4) * 0.5;
-      eye.material.emissiveIntensity = pulse;
-      eyeGlow.scale.set(2.4 + Math.sin(t * 2.4) * 0.18, 1.1, 1);
-      eyePoint.intensity = 1.2 + Math.sin(t * 2.4) * 0.3;
+      // the head node turns toward the pointer; the whole body adds a subtle
+      // counter-turn so the motion reads even if the head pivot sits at origin
+      if (headNode && headNode.userData.q0) {
+        // world-space yaw/pitch, applied on top of the node's baked orientation
+        _lookEuler.set(curPitch * 0.5, curYaw * 0.6, 0);
+        _lookQuat.setFromEuler(_lookEuler);
+        headNode.quaternion.copy(_lookQuat).multiply(headNode.userData.q0);
+      }
+      bot.rotation.y = BASE_YAW + curYaw * 0.35;     // rest at a 30° three-quarter pose
+      bot.rotation.x = curPitch * 0.18;
 
-      orbit.rotation.z += dt * 0.25;
-      orbit.rotation.x = 1.15 + Math.sin(t * 0.4) * 0.08;
+      // planted on the podium — no float
+
+      const flick = Math.sin(t * 2.4);
+      const pulse = 1.9 + flick * 0.6;
+      for (let i = 0; i < glowMats.length; i++) glowMats[i].emissiveIntensity = pulse;
+      eyePoint.intensity = 0.25 + flick * 0.08;        // faint face-glow spill breathes
+
+      // drift + slow-tumble the background triangles
+      for (let i = 0; i < tris.length; i++) {
+        const m = tris[i], u = m.userData;
+        m.rotation.x += dt * u.rs;
+        m.rotation.y += dt * u.rs2;
+        m.position.y = u.fy + Math.sin(t * u.fs + u.fa) * u.amp;
+      }
+
+      podRing.rotation.z += dt * 0.2;
+      orbit.rotation.z += dt * 0.18;
       dust.rotation.y += dt * 0.02;
 
       renderer.render(scene, camera);
