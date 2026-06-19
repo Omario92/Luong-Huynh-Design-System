@@ -1283,6 +1283,9 @@
   }
 
   function initCtaObjects() {
+    // A separate sprite-based CTA build (cta-sprite.js) can opt out of the 3D
+    // sentinel by setting <body data-cta-mode="sprite">. Default stays 3D.
+    if (document.body && document.body.dataset.ctaMode === 'sprite') return;
     const ctas = document.querySelectorAll('.lh-cta, .lh-footer-cta');
     if (!ctas.length) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

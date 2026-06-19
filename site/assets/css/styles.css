@@ -1434,8 +1434,8 @@ button, input, textarea { font: inherit; }
    panel is overflow:hidden, so it letterboxes cleanly) and
    never intercepts clicks. A left-side mask fades it into
    the gradient so the headline stays the hero. */
-.lh-cta > *:not(.lh-cta-object),
-.lh-footer-cta > *:not(.lh-cta-object) {
+.lh-cta > *:not(.lh-cta-object):not(.lh-cta-sprite),
+.lh-footer-cta > *:not(.lh-cta-object):not(.lh-cta-sprite) {
   position: relative;
   z-index: 2;
 }

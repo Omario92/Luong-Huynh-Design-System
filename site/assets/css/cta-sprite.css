@@ -1,0 +1,72 @@
+/* ── CTA SPRITE ROBOT (index-c.html) ──────────────────────
+   Image/video alternative to the WebGL sentinel. Three stacked
+   layers injected by cta-sprite.js into each .lh-cta / .lh-footer-cta:
+     .lh-cs-bg    — looping background video (furthest)
+     .lh-cs-body  — looping animated body video (alpha)
+     .lh-cs-head  — pre-rendered head frame swapped to track the cursor
+   Mirrors .lh-cta-object positioning so the headline stays the hero. */
+.lh-cta-sprite {
+  /* !important guards against a stale/cached styles.css whose
+     `.lh-cta > *:not(.lh-cta-object)` rule would otherwise force this host to
+     position:relative / z-index:2 and collapse it to height:0. */
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(54%, 580px);
+  z-index: 0 !important;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 42%);
+          mask-image: linear-gradient(to right, transparent, #000 42%);
+}
+
+.lh-cs-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+/* body + head share a centred stage anchored to the floor of the panel */
+.lh-cs-stage {
+  position: absolute;
+  left: 50%;
+  bottom: 3%;
+  transform: translateX(-50%);
+  width: min(88%, 470px);
+  aspect-ratio: 600 / 720;
+  will-change: transform;
+}
+
+.lh-cs-body {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 80%;
+}
+
+.lh-cs-head {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 64%;
+  will-change: transform;
+}
+
+@media (max-width: 767px) {
+  .lh-cta-sprite {
+    width: 100%;
+    opacity: 0.34;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 70%);
+            mask-image: linear-gradient(to bottom, transparent, #000 70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lh-cs-bg, .lh-cs-body { display: none; }
+}

@@ -9,8 +9,204 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/additions.css">
+  <style>
+    /* --- Scroll-driven video background variant ---------------------------
+       One full-screen <video> is fixed behind the page. Its currentTime is
+       NOT played - it is scrubbed by scroll position (script at bottom),
+       settling at fixed timestamps as each target section reaches the
+       centre of the viewport:
+         "Selected visuals ... campaign-grade finish."  ->  5s
+         "Concept to finished frame."                   ->  8s
+         "Built for visual campaigns."                  -> 11s
+         "Available for Work / Let's build ..."         -> 15s
+    --------------------------------------------------------------------- */
+    html, body { background: transparent !important; }
+    /* .lh-page ships with overflow:hidden, which becomes a scroll container and
+       breaks the hero position:sticky pin. overflow:clip clips horizontally the
+       same way but does NOT create a scroll container, so sticky works. */
+    .lh-page  { background: transparent !important; position: relative; z-index: 1; overflow: clip !important; }
+
+    .lh-bgv {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      background: var(--lh-bg, #070707);
+    }
+    .lh-bgv video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; will-change: transform;
+    }
+    .lh-bgv-scrim {
+      position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(180deg, rgba(7,7,7,0.62) 0%, rgba(7,7,7,0.50) 38%, rgba(7,7,7,0.78) 100%);
+    }
+    /* let the video read through the opaque sections; cards keep their panels */
+    .lh-page .lh-hero { background: transparent !important; }
+    .lh-page .lh-hero::before { display: none !important; }
+    .lh-page .lh-section-muted { background: transparent !important; }
+
+    .lh-bgv-readout {
+      position: fixed; right: clamp(14px, 2vw, 26px); bottom: clamp(14px, 2vw, 24px);
+      z-index: 70; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums;
+      pointer-events: none; user-select: none;
+    }
+    @media (prefers-reduced-motion: reduce) { .lh-bgv-readout { display: none; } }
+    /* --- Hero intro: pin the hero, scrub the text reveal on scroll -------- */
+    .lhx-hero-stage { position: relative; }
+    .lhx-hero-stage .lh-hero-grid { max-width: 1100px; } /* single column now */
+
+    @media (min-width: 768px) {
+      .lhx-hero-stage { height: 260vh; }            /* scroll budget: video-phase + reveal-phase */
+      .lhx-hero-stage .lh-hero {
+        position: sticky; top: 0; height: 100vh; min-height: 100vh;
+      }
+      /* While the intro is active, each hero item stays hidden until its own
+         scroll-progress threshold flips data-shown="1" (overrides main.js). */
+      .lh-hero.lhx-intro.is-intro-active .lh-reveal { opacity: 0; transform: translateY(28px); }
+      .lh-hero.lhx-intro.is-intro-active .lh-reveal[data-shown="1"] { opacity: 1; transform: translateY(0); }
+      .lh-hero.lhx-intro.is-intro-active .lh-line-reveal .lh-reveal-line-inner { transform: translateY(140%); }
+      .lh-hero.lhx-intro.is-intro-active .lh-line-reveal[data-shown="1"] .lh-reveal-line-inner { transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .lhx-hero-stage { height: auto !important; }
+      .lhx-hero-stage .lh-hero { position: relative !important; height: auto !important; min-height: min(860px, 92vh) !important; }
+    }
+
+    /* ── Liquid-glass cards — see-through to the background video ─────────
+       Approach + Services grids drop their solid panel backing and become
+       floating frosted-glass tiles that blur the video behind them. */
+    .lhx-approach,
+    .lh-service-grid {
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      overflow: visible !important;
+      gap: clamp(14px, 1.5vw, 22px) !important;
+    }
+
+    .lhx-approach-card,
+    .lh-service-card {
+      position: relative;
+      isolation: isolate;
+      background: linear-gradient(135deg, rgba(14,16,22,0.55), rgba(8,10,14,0.42)) !important;
+      -webkit-backdrop-filter: blur(22px) saturate(140%) brightness(0.7);
+      backdrop-filter: blur(22px) saturate(140%) brightness(0.7);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: clamp(16px, 1.4vw, 22px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.30),
+        inset 0 -1px 1px rgba(255,255,255,0.06),
+        0 18px 42px -18px rgba(0,0,0,0.55);
+      overflow: hidden;
+      transition: transform .55s cubic-bezier(.16,1,.3,1),
+                  border-color .45s ease, box-shadow .45s ease;
+    }
+
+    /* Specular sheen: soft diagonal light that reads as polished glass. */
+    .lhx-approach-card::before,
+    .lh-service-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background:
+        radial-gradient(130% 90% at 0% 0%, rgba(255,255,255,0.26), rgba(255,255,255,0) 46%),
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0) 32%);
+      mix-blend-mode: screen;
+      opacity: .55;
+      z-index: 1;
+    }
+
+    /* Faint accent-tinted refraction glow for depth. */
+    .lhx-approach-card::after,
+    .lh-service-card::after {
+      content: "";
+      position: absolute;
+      right: -12%; bottom: -22%;
+      width: 62%; height: 62%;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(0,240,255,0.18), rgba(0,240,255,0) 70%);
+      filter: blur(4px);
+      z-index: 0;
+    }
+
+    /* keep text above the sheen overlay */
+    .lhx-approach-card > *,
+    .lh-service-card > * { position: relative; z-index: 2; }
+
+    /* lift text legibility on glass */
+    .lhx-approach-card p { color: rgba(244,240,232,0.82); }
+    .lh-service-copy { color: rgba(244,240,232,0.82); }
+
+    .lhx-approach-card:hover,
+    .lh-service-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,255,255,0.32);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.40),
+        inset 0 -1px 1px rgba(255,255,255,0.08),
+        0 30px 64px -22px rgba(0,0,0,0.62);
+    }
+
+    /* Discipline marquee: dark smoked-glass strip. */
+    .lhx-marquee {
+      background: linear-gradient(135deg, rgba(14,16,22,0.50), rgba(8,10,14,0.40)) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(140%) brightness(0.75);
+      backdrop-filter: blur(20px) saturate(140%) brightness(0.75);
+      border-block: 1px solid rgba(255,255,255,0.12) !important;
+    }
+
+    /* Portfolio / work cards: glass body under each project thumbnail. */
+    .lh-work-card {
+      background: linear-gradient(135deg, rgba(14,16,22,0.55), rgba(8,10,14,0.42)) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(140%) brightness(0.72);
+      backdrop-filter: blur(20px) saturate(140%) brightness(0.72);
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        0 18px 42px -20px rgba(0,0,0,0.55);
+    }
+    .lh-work-card:hover {
+      background: linear-gradient(135deg, rgba(22,24,32,0.62), rgba(10,12,18,0.50)) !important;
+      border-color: rgba(255,255,255,0.28) !important;
+    }
+    /* lift the work-card copy on the darker glass */
+    .lh-work-desc { color: rgba(244,240,232,0.78); }
+
+    /* CTA panel: same dark smoked-glass surface (keeps its cyan accent + 3D object). */
+    .lh-cta {
+      background:
+        linear-gradient(135deg, rgba(0,240,255,0.10), rgba(8,10,14,0.46) 42%, rgba(14,16,22,0.52)) !important;
+      -webkit-backdrop-filter: blur(22px) saturate(140%) brightness(0.7);
+      backdrop-filter: blur(22px) saturate(140%) brightness(0.7);
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        inset 0 -1px 1px rgba(255,255,255,0.05),
+        0 18px 42px -18px rgba(0,0,0,0.55);
+    }
+
+    /* Fallback when backdrop-filter is unsupported: solid-ish dark glass. */
+    @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+      .lhx-approach-card,
+      .lh-service-card,
+      .lh-work-card { background: rgba(10,12,16,0.82) !important; }
+      .lhx-marquee { background: rgba(10,12,16,0.86) !important; }
+      .lh-cta { background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(10,12,16,0.88) 45%) !important; }
+    }
+
+  </style>
 </head>
 <body>
+
+<!-- SCROLL-SCRUBBED BACKGROUND VIDEO -->
+<div class="lh-bgv" aria-hidden="true">
+  <video id="lh-bg-video" muted playsinline webkit-playsinline preload="auto"
+         disablepictureinpicture src="assets/video/video_BG.mp4"></video>
+  <div class="lh-bgv-scrim"></div>
+</div>
+<div class="lh-bgv-readout" id="lh-bgv-readout" aria-hidden="true">0.0s</div>
 <div class="lh-page">
 
 <header class="lh-header">
@@ -31,26 +227,25 @@
 
 <main>
   <!-- ── HERO ─────────────────────────────────────────── -->
-  <section class="lh-hero">
+  <div class="lhx-hero-stage">
+  <section class="lh-hero lhx-intro is-intro-active">
     <div class="lh-container">
       <div class="lh-hero-grid">
         <div class="lh-hero-body">
-          <p class="lhx-index lh-reveal" style="margin-bottom:clamp(20px,3vw,28px); max-width:520px;">(01 — Selected work 2026)</p>
-          <span class="lh-eyebrow lh-reveal">Ho Chi Minh City · Digital Artist</span>
-          <h1 class="lh-hero-title lh-reveal lh-reveal-d1">Cinematic<br>digital<br>art</h1>
-          <p class="lh-hero-copy lh-reveal lh-reveal-d2">Digital Artist crafting 3D visuals, AI-generated imagery and VFX for brands, campaigns and cinematic stories.</p>
-          <div class="lh-hero-actions lh-reveal lh-reveal-d3">
+          <p class="lhx-index lh-reveal" data-intro="0.06" style="margin-bottom:clamp(20px,3vw,28px); max-width:520px;">(01 — Selected work 2026)</p>
+          <span class="lh-eyebrow lh-reveal" data-intro="0.2">Ho Chi Minh City · Digital Artist</span>
+          <h1 class="lh-hero-title lh-reveal lh-reveal-d1" data-intro="0.38">Cinematic<br>digital<br>art</h1>
+          <p class="lh-hero-copy lh-reveal lh-reveal-d2" data-intro="0.58">Digital Artist crafting 3D visuals, AI-generated imagery and VFX for brands, campaigns and cinematic stories.</p>
+          <div class="lh-hero-actions lh-reveal lh-reveal-d3" data-intro="0.74">
             <a class="lh-button lh-button-primary" href="portfolio.html">View Portfolio</a>
             <a class="lh-button" href="about.html">About Luong</a>
           </div>
-          <div class="lhx-scroll-cue lh-reveal lh-reveal-d3"><i></i>Scroll to explore</div>
-        </div>
-        <div class="lh-hero-visual lh-reveal lh-reveal-d2">
-          <canvas id="lh-particle-canvas" data-image="assets/img/luong-huynh-halftone.jpg"></canvas>
+          <div class="lhx-scroll-cue lh-reveal lh-reveal-d3" data-intro="0.84"><i></i>Scroll to explore</div>
         </div>
       </div>
     </div>
   </section>
+  </div>
 
   <!-- ── DISCIPLINE MARQUEE ───────────────────────────── -->
   <div class="lhx-marquee" aria-hidden="true">
@@ -68,7 +263,7 @@
       <div class="lh-section-head">
         <div class="lh-reveal">
           <p class="lh-section-kicker">Featured work</p>
-          <h2 class="lh-section-title">Selected visuals with campaign-grade finish.</h2>
+          <h2 class="lh-section-title" data-video-cue="5">Selected visuals with campaign-grade finish.</h2>
         </div>
         <p class="lh-section-copy lh-reveal lh-reveal-d1">A focused selection of recent campaign imagery, CGI and AI-generated visuals — spanning brand identity, product worlds and key visual systems.</p>
       </div>
@@ -169,7 +364,7 @@
       <div class="lh-section-head">
         <div class="lh-reveal">
           <p class="lh-section-kicker">How it works</p>
-          <h2 class="lh-section-title">Concept to finished frame.</h2>
+          <h2 class="lh-section-title" data-video-cue="8">Concept to finished frame.</h2>
         </div>
         <p class="lh-section-copy lh-reveal lh-reveal-d1">A repeatable pipeline that keeps art direction, generative workflows and production polish moving in one direction — delivery.</p>
       </div>
@@ -199,7 +394,7 @@
       <div class="lh-section-head">
         <div class="lh-reveal">
           <p class="lh-section-kicker">Services</p>
-          <h2 class="lh-section-title">Built for visual campaigns.</h2>
+          <h2 class="lh-section-title" data-video-cue="11">Built for visual campaigns.</h2>
         </div>
         <p class="lh-section-copy lh-reveal lh-reveal-d1">Focused on campaign-grade output for brands, agencies and production teams who need premium visual assets.</p>
       </div>
@@ -250,7 +445,7 @@
   <section class="lh-section" id="contact">
     <div class="lh-container">
       <div class="lh-cta">
-        <p class="lh-section-kicker lh-reveal">Available for Work</p>
+        <p class="lh-section-kicker lh-reveal" data-video-cue="15">Available for Work</p>
         <h2 class="lh-reveal lh-reveal-d1">Let's build the next cinematic brand visual.</h2>
         <p class="lh-reveal lh-reveal-d2">Send over the brief, references and target deliverables. I can help shape the visual direction from concept to finished campaign asset.</p>
         <div class="lh-hero-actions lh-reveal lh-reveal-d3">
@@ -294,6 +489,161 @@
       document.head.appendChild(st);
     }
   })();
+</script>
+
+<!-- SCROLL-DRIVEN VIDEO SCRUB ENGINE
+     Drives video.currentTime from scroll position. The video is never
+     "played" - it is seeked. Between two cue checkpoints the time is
+     linearly interpolated against scroll, so the frame moves while you
+     scroll and naturally "pauses" on the target timestamp once the cue
+     element settles at the centre of the viewport. -->
+<script>
+(function () {
+  var video   = document.getElementById('lh-bg-video');
+  var readout = document.getElementById('lh-bgv-readout');
+  if (!video) return;
+
+  var checkpoints = [];
+  var duration    = 0;
+  var displayTime = 0;
+  var primed      = false;
+  var raf         = 0;
+
+  function anchorScroll(el) {
+    var rect = el.getBoundingClientRect();
+    var absTop = rect.top + window.pageYOffset;
+    return absTop + el.offsetHeight / 2 - window.innerHeight / 2;
+  }
+
+  function introEnabled() {
+    return !!document.querySelector('.lhx-hero-stage') &&
+           window.innerWidth >= 768 &&
+           !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  function buildCheckpoints() {
+    var pts = [{ scroll: 0, time: 0 }];
+    // While the hero is pinned, the video scrubs 0 -> 2s across "Phase 1";
+    // the text only begins revealing afterwards.
+    if (introEnabled()) {
+      var pinDist = 1.6 * (window.innerHeight || 1); // stage 260vh - hero 100vh
+      pts.push({ scroll: 0.5 * pinDist, time: 2 });
+    }
+    var nodes = document.querySelectorAll('[data-video-cue]');
+    for (var i = 0; i < nodes.length; i++) {
+      var t = parseFloat(nodes[i].getAttribute('data-video-cue'));
+      if (isNaN(t)) continue;
+      var s = anchorScroll(nodes[i]);
+      pts.push({ scroll: s < 0 ? 0 : s, time: t });
+    }
+    pts.sort(function (a, b) { return a.scroll - b.scroll; });
+    for (var j = 1; j < pts.length; j++) {
+      if (pts[j].scroll <= pts[j - 1].scroll) pts[j].scroll = pts[j - 1].scroll + 1;
+    }
+    checkpoints = pts;
+  }
+
+  function targetForScroll(y) {
+    var pts = checkpoints;
+    if (!pts.length) return 0;
+    if (y <= pts[0].scroll) return pts[0].time;
+    var last = pts[pts.length - 1];
+    if (y >= last.scroll) return last.time;
+    for (var i = 0; i < pts.length - 1; i++) {
+      var a = pts[i], b = pts[i + 1];
+      if (y >= a.scroll && y <= b.scroll) {
+        var p = (y - a.scroll) / (b.scroll - a.scroll);
+        return a.time + p * (b.time - a.time);
+      }
+    }
+    return last.time;
+  }
+
+  function clamp(t) {
+    var max = duration ? duration - 0.05 : t;
+    if (t > max) t = max;
+    return t < 0 ? 0 : t;
+  }
+
+  function loop() {
+    var target = clamp(targetForScroll(window.pageYOffset));
+    displayTime += (target - displayTime) * 0.12;
+    if (Math.abs(target - displayTime) < 0.004) displayTime = target;
+    if (video.readyState >= 1 && Math.abs(video.currentTime - displayTime) > 0.01) {
+      try { video.currentTime = displayTime; } catch (e) {}
+    }
+    if (readout) readout.textContent = displayTime.toFixed(1) + 's';
+    raf = requestAnimationFrame(loop);
+  }
+
+  function prime() {
+    if (primed) return;
+    primed = true;
+    var pr = video.play();
+    if (pr && pr.then) pr.then(function () { video.pause(); }).catch(function () {});
+  }
+
+  video.addEventListener('loadedmetadata', function () {
+    duration = video.duration || 0;
+    video.pause();
+    buildCheckpoints();
+  });
+  video.addEventListener('play', function () { if (primed) video.pause(); });
+
+  window.addEventListener('resize', buildCheckpoints);
+  window.addEventListener('load', buildCheckpoints);
+  window.addEventListener('scroll',     prime, { once: true, passive: true });
+  window.addEventListener('touchstart', prime, { once: true, passive: true });
+  setTimeout(buildCheckpoints, 800);
+  setTimeout(buildCheckpoints, 2200);
+
+  buildCheckpoints();
+  loop();
+})();
+</script>
+<!-- HERO INTRO: pin + scroll-scrubbed text reveal -->
+<script>
+(function () {
+  var stage = document.querySelector('.lhx-hero-stage');
+  var hero  = stage && stage.querySelector('.lh-hero.lhx-intro');
+  if (!stage || !hero) return;
+  var items = [].slice.call(hero.querySelectorAll('[data-intro]'));
+  var cue   = hero.querySelector('.lhx-scroll-cue');   // scroll hint: visible from the start
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function enabled() { return !reduce && window.innerWidth >= 768; }
+
+  function showAll() {
+    hero.classList.remove('is-intro-active');
+    for (var i = 0; i < items.length; i++) items[i].setAttribute('data-shown', '1');
+  }
+
+  function frame() {
+    if (!enabled()) { showAll(); requestAnimationFrame(frame); return; }
+    var vh = window.innerHeight || 1;
+    var pinDist   = 1.6 * vh;        // stage 260vh - hero 100vh
+    var phase1End = 0.5 * pinDist;   // Phase 1: video scrubs 0 -> 2s, text hidden
+    var revealEnd = 0.97 * pinDist;  // Phase 2 ends just before the pin releases
+    var y = window.pageYOffset;
+
+    // Reveal progress only advances during Phase 2 (after the video hits ~2s).
+    var rp = (y - phase1End) / (revealEnd - phase1End);
+    if (rp < 0) rp = 0; else if (rp > 1) rp = 1;
+
+    for (var i = 0; i < items.length; i++) {
+      if (items[i] === cue) continue;              // handled below (always shown)
+      var thr = parseFloat(items[i].getAttribute('data-intro')) || 0;
+      if (rp >= thr) items[i].setAttribute('data-shown', '1');
+      else items[i].removeAttribute('data-shown');
+    }
+    if (cue) cue.setAttribute('data-shown', '1');
+
+    if (y >= pinDist) hero.classList.remove('is-intro-active');
+    else hero.classList.add('is-intro-active');
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>
