@@ -196,6 +196,47 @@
       .lh-cta { background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(10,12,16,0.88) 45%) !important; }
     }
 
+    /* ── Scroll-down indicator (shown during the 0–2s video phase) ──────── */
+    .lhx-scroll-arrow {
+      position: fixed; left: 50%; bottom: clamp(20px, 3vh, 34px);
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--lh-accent, #00f0ff); z-index: 40;
+      pointer-events: none; opacity: 1; transition: opacity .5s ease;
+    }
+    .lhx-sa-label {
+      font-family: var(--font-mono, monospace); font-size: 10px;
+      letter-spacing: 0.32em; text-transform: uppercase;
+      color: rgba(244,240,232,0.72); margin-bottom: 2px;
+    }
+    .lhx-sa-mouse {
+      width: 26px; height: 42px; border: 2px solid rgba(255,255,255,0.55);
+      border-radius: 14px; position: relative;
+    }
+    .lhx-sa-wheel {
+      position: absolute; left: 50%; top: 7px; width: 4px; height: 8px;
+      margin-left: -2px; border-radius: 2px; background: var(--lh-accent, #00f0ff);
+      box-shadow: 0 0 8px var(--lh-accent, #00f0ff);
+      animation: lhx-sa-wheel 1.6s cubic-bezier(.4,0,.2,1) infinite;
+    }
+    @keyframes lhx-sa-wheel {
+      0%   { opacity: 0; transform: translateY(0); }
+      18%  { opacity: 1; }
+      75%  { opacity: 1; transform: translateY(15px); }
+      100% { opacity: 0; transform: translateY(15px); }
+    }
+    .lhx-sa-chev {
+      animation: lhx-sa-bounce 1.6s ease-in-out infinite;
+      filter: drop-shadow(0 0 6px rgba(0,240,255,0.5));
+    }
+    @keyframes lhx-sa-bounce {
+      0%, 100% { transform: translateY(-1px); opacity: .55; }
+      50%      { transform: translateY(5px);  opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .lhx-sa-wheel, .lhx-sa-chev { animation: none; }
+    }
+
   </style>
 </head>
 <body>
@@ -207,6 +248,12 @@
   <div class="lh-bgv-scrim"></div>
 </div>
 <div class="lh-bgv-readout" id="lh-bgv-readout" aria-hidden="true">0.0s</div>
+<div class="lhx-scroll-arrow" aria-hidden="true">
+  <span class="lhx-sa-label">Scroll</span>
+  <span class="lhx-sa-mouse"><span class="lhx-sa-wheel"></span></span>
+  <svg class="lhx-sa-chev" viewBox="0 0 24 24" width="22" height="22" fill="none"
+       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+</div>
 <div class="lh-page">
 
 <header class="lh-header">
@@ -364,7 +411,7 @@
       <div class="lh-section-head">
         <div class="lh-reveal">
           <p class="lh-section-kicker">How it works</p>
-          <h2 class="lh-section-title" data-video-cue="8">Concept to finished frame.</h2>
+          <h2 class="lh-section-title" data-video-cue="8.5">Concept to finished frame.</h2>
         </div>
         <p class="lh-section-copy lh-reveal lh-reveal-d1">A repeatable pipeline that keeps art direction, generative workflows and production polish moving in one direction — delivery.</p>
       </div>
@@ -394,7 +441,7 @@
       <div class="lh-section-head">
         <div class="lh-reveal">
           <p class="lh-section-kicker">Services</p>
-          <h2 class="lh-section-title" data-video-cue="11">Built for visual campaigns.</h2>
+          <h2 class="lh-section-title" data-video-cue="12">Built for visual campaigns.</h2>
         </div>
         <p class="lh-section-copy lh-reveal lh-reveal-d1">Focused on campaign-grade output for brands, agencies and production teams who need premium visual assets.</p>
       </div>
@@ -445,7 +492,7 @@
   <section class="lh-section" id="contact">
     <div class="lh-container">
       <div class="lh-cta">
-        <p class="lh-section-kicker lh-reveal" data-video-cue="15">Available for Work</p>
+        <p class="lh-section-kicker lh-reveal" data-video-cue="16">Available for Work</p>
         <h2 class="lh-reveal lh-reveal-d1">Let's build the next cinematic brand visual.</h2>
         <p class="lh-reveal lh-reveal-d2">Send over the brief, references and target deliverables. I can help shape the visual direction from concept to finished campaign asset.</p>
         <div class="lh-hero-actions lh-reveal lh-reveal-d3">
@@ -609,6 +656,7 @@
   if (!stage || !hero) return;
   var items = [].slice.call(hero.querySelectorAll('[data-intro]'));
   var cue   = hero.querySelector('.lhx-scroll-cue');   // scroll hint: visible from the start
+  var arrow = document.querySelector('.lhx-scroll-arrow'); // animated scroll-down indicator (body-level, viewport-fixed)
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function enabled() { return !reduce && window.innerWidth >= 768; }
@@ -618,13 +666,21 @@
     for (var i = 0; i < items.length; i++) items[i].setAttribute('data-shown', '1');
   }
 
+  function setArrow(hide) { if (arrow) arrow.style.opacity = hide ? '0' : ''; }
+
   function frame() {
-    if (!enabled()) { showAll(); requestAnimationFrame(frame); return; }
+    var y = window.pageYOffset;
     var vh = window.innerHeight || 1;
+    if (!enabled()) {
+      showAll();
+      setArrow(y >= vh * 0.4);             // generic hint fade on mobile / reduced motion
+      requestAnimationFrame(frame); return;
+    }
     var pinDist   = 1.6 * vh;        // stage 260vh - hero 100vh
     var phase1End = 0.5 * pinDist;   // Phase 1: video scrubs 0 -> 2s, text hidden
     var revealEnd = 0.97 * pinDist;  // Phase 2 ends just before the pin releases
-    var y = window.pageYOffset;
+    // Scroll arrow: visible through the 0-2s video phase, fades as the text reveals.
+    setArrow(y >= phase1End * 0.85);
 
     // Reveal progress only advances during Phase 2 (after the video hits ~2s).
     var rp = (y - phase1End) / (revealEnd - phase1End);
